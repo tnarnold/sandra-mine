@@ -11,7 +11,7 @@ use std::sync::Arc;
 use std::sync::atomic::Ordering::*;
 use std::time::{Duration, Instant};
 
-const AGENT: &str = concat!("NerdMinerEmu/", env!("CARGO_PKG_VERSION"));
+const AGENT: &str = concat!("SandraMine/", env!("CARGO_PKG_VERSION"));
 
 pub fn spawn(shared: Arc<Shared>) {
     std::thread::Builder::new()

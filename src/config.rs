@@ -41,7 +41,7 @@ impl Default for Config {
             pool_host: "public-pool.io".into(),
             pool_port: 21496,
             btc_address: String::new(),
-            worker_name: "nerdminer-emu".into(),
+            worker_name: "sandra-mine".into(),
             pool_password: "x".into(),
             suggest_diff: 1.0,
             cpu_enabled: true,
@@ -66,14 +66,29 @@ impl Config {
         if let Ok(p) = std::env::var("NERDMINER_CONFIG") {
             return PathBuf::from(p);
         }
+        Self::dir("sandra-mine")
+    }
+
+    fn dir(app: &str) -> PathBuf {
         dirs::config_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join("nerdminer-emu")
+            .join(app)
             .join("config.json")
     }
 
     pub fn load() -> Config {
-        std::fs::read_to_string(Self::path())
+        let path = Self::path();
+        // The app used to be "nerdminer-emu": copy its config once, keeping the old file.
+        if std::env::var_os("NERDMINER_CONFIG").is_none() && !path.exists() {
+            let legacy = Self::dir("nerdminer-emu");
+            if legacy.exists() {
+                if let Some(dir) = path.parent() {
+                    let _ = std::fs::create_dir_all(dir);
+                }
+                let _ = std::fs::copy(legacy, &path);
+            }
+        }
+        std::fs::read_to_string(path)
             .ok()
             .and_then(|s| serde_json::from_str(&s).ok())
             .unwrap_or_default()

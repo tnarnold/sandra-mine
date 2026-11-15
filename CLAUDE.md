@@ -1,9 +1,9 @@
-# NerdMiner Emulator
+# SandraMine
 
 Emulador desktop em Rust do NerdMiner: minerador solo de Bitcoin no estilo loteria, com as telas do T-Display, bandeja do sistema e limites de CPU/GPU. Roda em macOS, Linux e Windows.
 
-- Repositório público: https://github.com/tnarnold/nerdminer-emu (conta `gh`: `tnarnold`)
-- Site: https://tnarnold.github.io/nerdminer-emu/
+- Repositório público: https://github.com/tnarnold/sandra-mine (conta `gh`: `tnarnold`)
+- Site: https://tnarnold.github.io/sandra-mine/
 - Trabalho planejado: [`docs/ROADMAP.md`](docs/ROADMAP.md). Comece por ali.
 - Manuais do usuário: `docs/MANUAL.md` (en) e `docs/MANUAL.pt-BR.md`.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Builds "NerdMiner Emulator.app" (universal: Apple Silicon + Intel) and a .dmg installer.
+# Builds "SandraMine.app" (universal: Apple Silicon + Intel) and a .dmg installer.
 #
-#   scripts/package-macos.sh            -> dist/NerdMiner-Emulator-<versão>-macos-universal.dmg
+#   scripts/package-macos.sh            -> dist/SandraMine-<versão>-macos-universal.dmg
 #
 # Optional signing/notarization (needs an Apple Developer ID):
 #   MACOS_SIGN_IDENTITY="Developer ID Application: Nome (TEAMID)"
@@ -10,13 +10,13 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
-APP_NAME="NerdMiner Emulator"
-BIN="nerdminer-emu"
-BUNDLE_ID="io.github.tnarnold.nerdminer-emu"
+APP_NAME="SandraMine"
+BIN="sandra-mine"
+BUNDLE_ID="io.github.tnarnold.sandra-mine"
 VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
 DIST="dist"
 APP="$DIST/$APP_NAME.app"
-DMG="$DIST/NerdMiner-Emulator-$VERSION-macos-universal.dmg"
+DMG="$DIST/SandraMine-$VERSION-macos-universal.dmg"
 
 echo "==> Compilando $BIN $VERSION (arm64 + x86_64)"
 rustup target add aarch64-apple-darwin x86_64-apple-darwin >/dev/null

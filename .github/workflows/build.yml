@@ -12,14 +12,14 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact: nerdminer-emu-linux-x86_64
-            bin: nerdminer-emu
+            artifact: sandra-mine-linux-x86_64
+            bin: sandra-mine
           - os: windows-latest
-            artifact: nerdminer-emu-windows-x86_64
-            bin: nerdminer-emu.exe
+            artifact: sandra-mine-windows-x86_64
+            bin: sandra-mine.exe
           - os: macos-latest
-            artifact: nerdminer-emu-macos-arm64
-            bin: nerdminer-emu
+            artifact: sandra-mine-macos-arm64
+            bin: sandra-mine
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

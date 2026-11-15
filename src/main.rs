@@ -29,7 +29,7 @@ fn main() -> eframe::Result {
     netinfo::spawn(shared.clone());
 
     let mut viewport = egui::ViewportBuilder::default()
-        .with_title("NerdMiner Emulator")
+        .with_title("SandraMine")
         .with_inner_size(app::COMPACT * 1.4)
         .with_resizable(false)
         .with_decorations(false)
@@ -47,7 +47,7 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "NerdMiner Emulator",
+        "SandraMine",
         options,
         Box::new(move |cc| Ok(Box::new(app::NerdApp::new(cc, shared)))),
     )

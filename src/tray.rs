@@ -368,7 +368,7 @@ impl Tray {
         let icon = make_icon(Status::Connecting).ok_or("invalid icon")?;
         let tray = TrayIconBuilder::new()
             .with_menu(Box::new(menu))
-            .with_tooltip("NerdMiner Emulator")
+            .with_tooltip("SandraMine")
             .with_icon(icon)
             .build()
             .map_err(|e| e.to_string())?;
@@ -460,7 +460,7 @@ impl Tray {
 
         // ---- tooltip: at most every TOOLTIP_EVERY unless the status changed
         let hr = field_text("hashrate", s, &n, paused).unwrap_or_default();
-        let mut tip = format!("NerdMiner — {}\n{hr} · best {}", status.label().to_lowercase(), fmt::diff(s.best_diff.get()));
+        let mut tip = format!("SandraMine — {}\n{hr} · best {}", status.label().to_lowercase(), fmt::diff(s.best_diff.get()));
         if let Some(b) = &n.last_block {
             tip += "\n";
             tip += &fill(t.tip_block, &[&b.height, &fmt::duration(now_unix().saturating_sub(b.time) as f64)]);

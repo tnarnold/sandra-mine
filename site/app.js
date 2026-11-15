@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  var REPO = "tnarnold/nerdminer-emu";
+  var REPO = "tnarnold/sandra-mine";
   var root = document.documentElement;
   var isPt = function () { return /^pt/i.test(root.lang); };
   var nf = function (n, d) {

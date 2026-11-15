@@ -1,4 +1,4 @@
-# NerdMiner Emulator (Rust)
+# SandraMine (Rust)
 
 **English** | [Português (BR)](README.pt-BR.md)
 
@@ -8,7 +8,7 @@ your desktop, can hide in the system tray, and lets you control how much CPU and
 
 Runs on **macOS, Linux and Windows**.
 
-🌐 **[Website](https://tnarnold.github.io/nerdminer-emu/)** · 📖 **[User manual](docs/MANUAL.md)**: setup, every screen and setting, how it works, troubleshooting.
+🌐 **[Website](https://tnarnold.github.io/sandra-mine/)** · 📖 **[User manual](docs/MANUAL.md)**: setup, every screen and setting, how it works, troubleshooting.
 
 ## Features
 
@@ -61,19 +61,19 @@ Process CPU is shown the way `top` reports it (100% = one full core; 800% = the 
 ## Install
 
 Download the installer for your platform from the
-[Releases](https://github.com/tnarnold/nerdminer-emu/releases) page:
+[Releases](https://github.com/tnarnold/sandra-mine/releases) page:
 
-- **macOS** (Apple Silicon and Intel): `NerdMiner-Emulator-<version>-macos-universal.dmg`. Open the
-  `.dmg` and drag **NerdMiner Emulator** into **Applications**. The app is not notarized by Apple,
+- **macOS** (Apple Silicon and Intel): `SandraMine-<version>-macos-universal.dmg`. Open the
+  `.dmg` and drag **SandraMine** into **Applications**. The app is not notarized by Apple,
   so the first time right-click the app → **Open** → **Open** (or run
-  `xattr -dr com.apple.quarantine "/Applications/NerdMiner Emulator.app"`).
-- **Windows**: `...-windows-x86_64.zip`, extract it and run `nerdminer-emu.exe`.
-- **Linux**: `...-linux-x86_64.tar.gz`, extract it and run `./nerdminer-emu`.
+  `xattr -dr com.apple.quarantine "/Applications/SandraMine.app"`).
+- **Windows**: `...-windows-x86_64.zip`, extract it and run `sandra-mine.exe`.
+- **Linux**: `...-linux-x86_64.tar.gz`, extract it and run `./sandra-mine`.
 
 ### Build the .dmg locally
 
 ```sh
-scripts/package-macos.sh   # -> dist/NerdMiner-Emulator-<version>-macos-universal.dmg
+scripts/package-macos.sh   # -> dist/SandraMine-<version>-macos-universal.dmg
 ```
 
 With an Apple Developer account you can sign and notarize it by setting `MACOS_SIGN_IDENTITY`
@@ -111,9 +111,9 @@ out of the box.
 See the [user manual](docs/MANUAL.md#5-settings-) for every option. In short: on first launch the ⚙ panel opens: enter your **BTC address** and click
 *Salvar e reconectar* (save and reconnect). The configuration is stored at:
 
-- macOS: `~/Library/Application Support/nerdminer-emu/config.json`
-- Linux: `~/.config/nerdminer-emu/config.json`
-- Windows: `%APPDATA%\nerdminer-emu\config.json`
+- macOS: `~/Library/Application Support/sandra-mine/config.json`
+- Linux: `~/.config/sandra-mine/config.json`
+- Windows: `%APPDATA%\sandra-mine\config.json`
 
 Useful environment variables for development:
 

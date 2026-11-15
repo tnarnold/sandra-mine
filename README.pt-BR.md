@@ -1,4 +1,4 @@
-# NerdMiner Emulator (Rust)
+# SandraMine (Rust)
 
 [English](README.md) | **Português (BR)**
 
@@ -9,7 +9,7 @@ CPU e GPU.
 
 Funciona em **macOS, Linux e Windows**.
 
-🌐 **[Site](https://tnarnold.github.io/nerdminer-emu/)** · 📖 **[Manual do usuário](docs/MANUAL.pt-BR.md)**: configuração, cada tela e opção, como funciona e solução de problemas.
+🌐 **[Site](https://tnarnold.github.io/sandra-mine/)** · 📖 **[Manual do usuário](docs/MANUAL.pt-BR.md)**: configuração, cada tela e opção, como funciona e solução de problemas.
 
 ## Recursos
 
@@ -59,19 +59,19 @@ CPU do processo no formato do `top` (100% = 1 núcleo inteiro; 800% = a máquina
 
 ## Instalar
 
-Baixe o instalador da sua plataforma na página [Releases](https://github.com/tnarnold/nerdminer-emu/releases):
+Baixe o instalador da sua plataforma na página [Releases](https://github.com/tnarnold/sandra-mine/releases):
 
-- **macOS** (Apple Silicon e Intel): `NerdMiner-Emulator-<versão>-macos-universal.dmg`. Abra o
-  `.dmg` e arraste **NerdMiner Emulator** para **Aplicativos**. Como o app não é notarizado pela
+- **macOS** (Apple Silicon e Intel): `SandraMine-<versão>-macos-universal.dmg`. Abra o
+  `.dmg` e arraste **SandraMine** para **Aplicativos**. Como o app não é notarizado pela
   Apple, na primeira vez clique com o botão direito no app → **Abrir** → **Abrir** (ou rode
-  `xattr -dr com.apple.quarantine "/Applications/NerdMiner Emulator.app"`).
-- **Windows**: `...-windows-x86_64.zip`, extraia e rode `nerdminer-emu.exe`.
-- **Linux**: `...-linux-x86_64.tar.gz`, extraia e rode `./nerdminer-emu`.
+  `xattr -dr com.apple.quarantine "/Applications/SandraMine.app"`).
+- **Windows**: `...-windows-x86_64.zip`, extraia e rode `sandra-mine.exe`.
+- **Linux**: `...-linux-x86_64.tar.gz`, extraia e rode `./sandra-mine`.
 
 ### Gerar o .dmg localmente
 
 ```sh
-scripts/package-macos.sh   # -> dist/NerdMiner-Emulator-<versão>-macos-universal.dmg
+scripts/package-macos.sh   # -> dist/SandraMine-<versão>-macos-universal.dmg
 ```
 
 Com uma conta Apple Developer dá para assinar e notarizar definindo `MACOS_SIGN_IDENTITY` e
@@ -108,9 +108,9 @@ A bandeja no Linux usa StatusNotifierItem (D-Bus, crate `ksni`). Em GNOME é pre
 Todas as opções estão no [manual do usuário](docs/MANUAL.pt-BR.md#5-configurações-). Resumindo: na primeira execução o painel ⚙ abre: informe seu **endereço BTC** e clique em
 *Salvar e reconectar*. A configuração fica em:
 
-- macOS: `~/Library/Application Support/nerdminer-emu/config.json`
-- Linux: `~/.config/nerdminer-emu/config.json`
-- Windows: `%APPDATA%\nerdminer-emu\config.json`
+- macOS: `~/Library/Application Support/sandra-mine/config.json`
+- Linux: `~/.config/sandra-mine/config.json`
+- Windows: `%APPDATA%\sandra-mine\config.json`
 
 Variáveis úteis para desenvolvimento:
 

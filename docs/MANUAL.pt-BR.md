@@ -1,4 +1,4 @@
-# NerdMiner Emulator: Manual do usuário
+# SandraMine: Manual do usuário
 
 [English](MANUAL.md) | **Português (BR)**
 
@@ -22,7 +22,7 @@ funciona por dentro. Para instalar, veja o [README](../README.pt-BR.md#instalar)
 
 ## 1. O que é (e o que esperar)
 
-O NerdMiner Emulator é a versão desktop do [NerdMiner](https://github.com/BitMaker-hub/NerdMiner_v2),
+O SandraMine é a versão desktop do [NerdMiner](https://github.com/BitMaker-hub/NerdMiner_v2),
 o pequeno aparelho com ESP32 que faz **mineração solo de Bitcoin**. Ele se conecta a uma
 **pool solo**, recebe modelos de bloco e fica calculando hashes sobre eles. Se algum hash for bom o
 bastante para ser um bloco válido, **a recompensa inteira do bloco vai para o seu endereço**.
@@ -352,25 +352,25 @@ o número da tela.
 
 Ative **Iniciar escondido na bandeja** para o app abrir direto na bandeja e depois:
 
-- **macOS**: Ajustes do Sistema → Geral → Itens de Início → **+** → escolha *NerdMiner Emulator*.
+- **macOS**: Ajustes do Sistema → Geral → Itens de Início → **+** → escolha *SandraMine*.
 - **Windows**: aperte `Win + R`, digite `shell:startup` e coloque nessa pasta um atalho para
-  `nerdminer-emu.exe`.
-- **Linux**: crie `~/.config/autostart/nerdminer-emu.desktop`:
+  `sandra-mine.exe`.
+- **Linux**: crie `~/.config/autostart/sandra-mine.desktop`:
 
   ```ini
   [Desktop Entry]
   Type=Application
-  Name=NerdMiner Emulator
-  Exec=/caminho/para/nerdminer-emu
+  Name=SandraMine
+  Exec=/caminho/para/sandra-mine
   ```
 
 ## 11. Arquivo de configuração
 
 As configurações ficam salvas em JSON:
 
-- macOS: `~/Library/Application Support/nerdminer-emu/config.json`
-- Linux: `~/.config/nerdminer-emu/config.json`
-- Windows: `%APPDATA%\nerdminer-emu\config.json`
+- macOS: `~/Library/Application Support/sandra-mine/config.json`
+- Linux: `~/.config/sandra-mine/config.json`
+- Windows: `%APPDATA%\sandra-mine\config.json`
 
 Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 
@@ -379,7 +379,7 @@ Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 | `btc_address` | `""` | Endereço da recompensa. |
 | `pool_host` | `"public-pool.io"` | Endereço da pool. |
 | `pool_port` | `21496` | Porta da pool. |
-| `worker_name` | `"nerdminer-emu"` | Nome do worker (`endereço.worker`). |
+| `worker_name` | `"sandra-mine"` | Nome do worker (`endereço.worker`). |
 | `pool_password` | `"x"` | Senha do Stratum. |
 | `suggest_diff` | `1.0` | Dificuldade de share sugerida (`0` = não enviar). |
 | `cpu_enabled` | `true` | Minerar com a CPU. |
@@ -434,7 +434,7 @@ Para voltar tudo ao padrão, feche o app e apague o arquivo.
 **O macOS diz que o app não pode ser aberto**
 
 - O app não é notarizado pela Apple. Clique com o botão direito no app → **Abrir** → **Abrir**, ou
-  rode `xattr -dr com.apple.quarantine "/Applications/NerdMiner Emulator.app"`.
+  rode `xattr -dr com.apple.quarantine "/Applications/SandraMine.app"`.
 
 **O ícone da bandeja não aparece (Linux)**
 
