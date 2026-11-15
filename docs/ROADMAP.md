@@ -1,6 +1,6 @@
 # Roadmap
 
-Ideias aprovadas ou propostas, sem data. Marque aqui o que entrar em uma versão. Mapa do projeto e regras de trabalho: [`CLAUDE.md`](../CLAUDE.md).
+Ideias aprovadas ou propostas, sem data. Marque aqui o que entrar em uma versão. Mapa do projeto e regras de trabalho: `CLAUDE.md` (local, fora do git).
 
 ## Próximas
 
