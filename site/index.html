@@ -43,20 +43,24 @@
 <header class="nav" id="nav">
   <div class="wrap">
     <a class="brand" href="#top"><img src="img/icon.png" alt="" width="28" height="28">Sandra<span class="slash">/</span>MINE</a>
-    <nav class="nav-links">
+    <nav class="nav-links" id="nav-links">
       <a href="#lottery"><span data-l="en">Lottery mining</span><span data-l="pt">Loteria</span></a>
       <a href="#features"><span data-l="en">Features</span><span data-l="pt">Recursos</span></a>
       <a href="#status">Status</a>
       <a href="#lab"><span data-l="en">Lab</span><span data-l="pt">Laboratório</span></a>
+      <a href="course/"><span data-l="en">Course</span><span data-l="pt">Curso</span></a>
       <a href="#download">Download</a>
       <a href="#setup"><span data-l="en">Setup</span><span data-l="pt">Configurar</span></a>
       <a href="#faq">FAQ</a>
     </nav>
-    <div class="lang" role="group" aria-label="Language">
-      <button type="button" data-set-lang="en">EN</button>
-      <button type="button" data-set-lang="pt-BR">PT</button>
+    <div class="nav-tools">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-set-lang="en">EN</button>
+        <button type="button" data-set-lang="pt-BR">PT</button>
+      </div>
+      <a class="gh" href="https://github.com/tnarnold/sandra-mine" aria-label="GitHub"><iconify-icon icon="mdi:github"></iconify-icon></a>
+      <button type="button" class="menu-btn" aria-controls="nav-links" aria-expanded="false" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
-    <a class="gh" href="https://github.com/tnarnold/sandra-mine" aria-label="GitHub"><iconify-icon icon="mdi:github"></iconify-icon></a>
   </div>
 </header>
 
@@ -378,6 +382,17 @@
       <span data-l="en">Open it from the 🎓 button or the tray menu. The lab takes no memory until you open it.</span>
       <span data-l="pt">Abra pelo botão 🎓 ou pelo menu da bandeja. O laboratório não ocupa memória até você abrir.</span>
     </p>
+    <div class="course-cta reveal">
+      <div>
+        <span class="label"><span class="idx"><span data-l="en">Free</span><span data-l="pt">Grátis</span></span> <span data-l="en">No install</span><span data-l="pt">Sem instalar nada</span></span>
+        <h3><span data-l="en">Prefer your browser? Take the animated course</span><span data-l="pt">Prefere o navegador? Faça o curso animado</span></h3>
+        <p class="muted">
+          <span data-l="en">9 short lessons, from one transaction to your odds of finding a block. Real hashes computed in your browser, a toy miner you can run, and live network numbers.</span>
+          <span data-l="pt">9 lições curtas, de uma transação até as suas chances de achar um bloco. Hashes reais calculados no navegador, um minerador de brinquedo para você rodar e números ao vivo da rede.</span>
+        </p>
+      </div>
+      <a class="btn primary" href="course/"><span data-l="en">Open the course</span><span data-l="pt">Abrir o curso</span> →</a>
+    </div>
   </div>
 </section>
 
@@ -619,12 +634,14 @@ cargo run --release</pre>
       <a href="https://github.com/tnarnold/sandra-mine/releases">Releases</a>
       <a href="https://github.com/tnarnold/sandra-mine/blob/main/docs/MANUAL.md" data-l="en">Manual</a>
       <a href="https://github.com/tnarnold/sandra-mine/blob/main/docs/MANUAL.pt-BR.md" data-l="pt">Manual</a>
+      <a href="course/"><span data-l="en">Course</span><span data-l="pt">Curso</span></a>
       <a href="https://github.com/BitMaker-hub/NerdMiner_v2">NerdMiner v2</a>
       <a href="https://gobtc.com.br">Go BTC</a>
     </div>
   </div>
 </footer>
 
+<script src="nav.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

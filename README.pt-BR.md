@@ -27,6 +27,7 @@ Funciona em **macOS, Linux e Windows**.
 - Nome do app, SandraMine, centralizado no topo; logotipo Go BTC discreto no canto superior esquerdo (clicar abre https://gobtc.com.br).
 - Preço do BTC na sua moeda (BRL, USD, EUR, GBP, CAD, CHF, AUD, JPY).
 - **Laboratório 3D** que ensina como a mineração funciona, em 8 etapas, com os hashes reais do seu minerador. Não ocupa memória até ser aberto.
+- **Curso animado** gratuito no site, sem instalar nada: [Como funciona a mineração de Bitcoin](https://tnarnold.github.io/sandra-mine/course/), 9 lições com hashes reais calculados no navegador e dados ao vivo da rede.
 - Interface em **português e inglês**, seguindo o idioma do sistema (dá para trocar no app). Adicionar um idioma é um arquivo só: `src/i18n.rs`.
 - Dados de rede (preço, altura, hashrate global, taxas, halving) do mempool.space.
 
@@ -167,6 +168,7 @@ nonce real do bloco gênese.
 | `src/tray.rs` | bandeja do sistema (bolinha de estado, campos da barra de menus, painel de rede/taxas) |
 | `src/i18n.rs` | textos da interface (português, inglês) |
 | `src/lab/` | laboratório 3D: renderizador wgpu, as 8 etapas, amostras reais e as lições |
+| `site/course/` | curso animado na web (sem build); textos em `i18n/<idioma>.js`, conferidos por `node scripts/check-course-i18n.mjs` |
 | `src/currency.rs` | moedas de exibição |
 | `src/netinfo.rs` | dados da rede via mempool.space |
 

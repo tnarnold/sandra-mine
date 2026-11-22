@@ -27,6 +27,7 @@ Runs on **macOS, Linux and Windows**.
 - App name, SandraMine, centered at the top; discreet Go BTC logo in the top-left corner (clicking it opens https://gobtc.com.br).
 - BTC price in your currency (BRL, USD, EUR, GBP, CAD, CHF, AUD, JPY).
 - **3D lab** that teaches how mining works in 8 steps, using your miner's real hashes. It takes no memory until opened.
+- Free **animated course** on the website, no install needed: [How Bitcoin mining works](https://tnarnold.github.io/sandra-mine/course/), 9 lessons with real hashes computed in the browser and live network data.
 - Interface in **English and Portuguese**, following the system language (switchable in the app). Adding a language is one file: `src/i18n.rs`.
 - Network data (price, block height, global hashrate, fees, halving) from mempool.space.
 
@@ -170,6 +171,7 @@ block nonce.
 | `src/tray.rs` | system tray (status dot, menu bar fields, network/fee dashboard) |
 | `src/i18n.rs` | interface strings (English, Portuguese) |
 | `src/lab/` | 3D lab: wgpu studio renderer, the 8 steps, real samples and the lessons |
+| `site/course/` | animated web course (no build step); text in `i18n/<lang>.js`, checked by `node scripts/check-course-i18n.mjs` |
 | `src/currency.rs` | display currencies |
 | `src/netinfo.rs` | network data from mempool.space |
 
