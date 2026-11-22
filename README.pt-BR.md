@@ -24,7 +24,7 @@ Funciona em **macOS, Linux e Windows**.
     A GPU vem **desligada** por padrão e só é usada se for selecionada.
 - Bandeja do sistema como mini painel: bolinha de estado, estatísticas da mineração, **ocupação da rede e a taxa para usar agora** (com o custo em sats e na sua moeda) e controles rápidos de CPU/GPU. No macOS os campos escolhidos aparecem na barra de menus.
 - Janela sem bordas, opção "sempre no topo", zoom 1x–2.5x, iniciar escondido.
-- Logotipo Go BTC discreto no canto superior esquerdo; clicar abre https://gobtc.com.br.
+- Nome do app, SandraMine, centralizado no topo; logotipo Go BTC discreto no canto superior esquerdo (clicar abre https://gobtc.com.br).
 - Preço do BTC na sua moeda (BRL, USD, EUR, GBP, CAD, CHF, AUD, JPY).
 - **Laboratório 3D** que ensina como a mineração funciona, em 8 etapas, com os hashes reais do seu minerador. Não ocupa memória até ser aberto.
 - Interface em **português e inglês**, seguindo o idioma do sistema (dá para trocar no app). Adicionar um idioma é um arquivo só: `src/i18n.rs`.

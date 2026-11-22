@@ -24,7 +24,7 @@ Runs on **macOS, Linux and Windows**.
     The GPU is **off** by default and only used when selected.
 - System tray as a mini dashboard: status dot, mining stats, **network occupancy and the fee to use right now** (with the cost in sats and your currency), quick CPU/GPU controls. On macOS the fields you choose appear in the menu bar.
 - Borderless window, "always on top" option, 1x–2.5x zoom, start hidden.
-- Discreet Go BTC logo in the top-left corner; clicking it opens https://gobtc.com.br.
+- App name, SandraMine, centered at the top; discreet Go BTC logo in the top-left corner (clicking it opens https://gobtc.com.br).
 - BTC price in your currency (BRL, USD, EUR, GBP, CAD, CHF, AUD, JPY).
 - **3D lab** that teaches how mining works in 8 steps, using your miner's real hashes. It takes no memory until opened.
 - Interface in **English and Portuguese**, following the system language (switchable in the app). Adding a language is one file: `src/i18n.rs`.

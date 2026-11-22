@@ -71,7 +71,7 @@ What you **don't** need:
 | Element | What it does |
 |---|---|
 | Go BTC logo (top-left) | Opens https://gobtc.com.br in your browser. |
-| Top strip | Drag it to move the window. |
+| Top strip | Shows the app name, SandraMine. Drag it to move the window. |
 | Screen | **Click** to go to the next screen (like the device button). **Drag** to move the window. |
 | **◀ / ▶** | Previous / next screen. |
 | **⏸ Pausar** / **▶ Minerar** | Pause / resume mining (CPU and GPU). The state is remembered: if you quit while paused, the app starts paused next time. |

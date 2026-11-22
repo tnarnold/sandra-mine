@@ -67,7 +67,7 @@ O que você **não** precisa:
 | Elemento | O que faz |
 |---|---|
 | Logo Go BTC (canto superior esquerdo) | Abre https://gobtc.com.br no navegador. |
-| Faixa superior | Arraste para mover a janela. |
+| Faixa superior | Mostra o nome do app, SandraMine. Arraste para mover a janela. |
 | Tela | **Clique** para ir à próxima tela (como o botão do aparelho). **Arraste** para mover a janela. |
 | **◀ / ▶** | Tela anterior / próxima. |
 | **⏸ Pausar** / **▶ Minerar** | Pausa / retoma a mineração (CPU e GPU). O estado fica salvo: se você sair com o app pausado, ele abre pausado na próxima vez. |

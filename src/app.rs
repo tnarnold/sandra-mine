@@ -316,13 +316,22 @@ impl NerdApp {
         });
     }
 
-    /// Top strip: discreet brand logo (top-left, aligned with the screen) + window drag area.
+    /// Top strip: discreet brand logo (top-left, aligned with the screen), app name (centered)
+    /// + window drag area.
     fn draw_header(&mut self, ui: &mut egui::Ui) {
         let width = ui.available_width();
         let (bar, bar_resp) = ui.allocate_exact_size(Vec2::new(width, HEADER_H), Sense::click_and_drag());
         if bar_resp.drag_started() {
             ui.ctx().send_viewport_cmd(ViewportCommand::StartDrag);
         }
+        // App name, centered over the screen (the window has no native title bar).
+        ui.painter().text(
+            egui::pos2(bar.center().x, bar.center().y + 2.0),
+            egui::Align2::CENTER_CENTER,
+            "SandraMine",
+            egui::FontId::proportional(13.0),
+            Color32::from_gray(170),
+        );
         let logo = self.logo.get_or_insert_with(|| load_logo(ui.ctx()));
         let rect = Rect::from_min_size(
             egui::pos2(bar.left() + BEZEL, bar.center().y - LOGO / 2.0 + 2.0),
