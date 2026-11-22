@@ -141,7 +141,7 @@ Mudanças na seção **Pool** só valem depois de clicar em **Salvar e reconecta
 | **Endereço BTC** | Endereço que recebe a recompensa se você achar um bloco. Use um endereço **de uma carteira que você controla** (bc1q…, bc1p…, 3… ou 1…). Evite endereços de depósito de corretora: a recompensa de bloco é uma transação especial que só pode ser gasta depois de 100 confirmações, e corretoras podem não creditá-la. |
 | **Pool** | Endereço da pool. Padrão `public-pool.io`. |
 | **Porta** | Porta da pool. `21496` para public-pool.io, `3333` para solo.ckpool.org. |
-| **Worker** | Nome deste minerador. É enviado como `endereço.worker`, o que permite distinguir várias máquinas na pool. Instalações novas usam `sandra-<nome-do-computador>`. Deixe vazio para enviar só o endereço. |
+| **Worker** | Nome deste minerador. É enviado como `endereço.worker`, o que permite distinguir várias máquinas na pool. Instalações novas usam `sm-<nome-do-computador>`. Deixe vazio para enviar só o endereço. |
 | **Senha** | Senha do Stratum. Pools solo ignoram; deixe `x`. |
 | **Dif. sugerida** | Dificuldade de share pedida à pool via `mining.suggest_difficulty`. `0` = não pedir. Veja abaixo. |
 | **Salvar e reconectar** | Salva os campos da pool e reconecta na hora. |
@@ -411,7 +411,7 @@ Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 | `btc_address` | `""` | Endereço da recompensa. |
 | `pool_host` | `"public-pool.io"` | Endereço da pool. |
 | `pool_port` | `21496` | Porta da pool. |
-| `worker_name` | `"sandra-<computador>"` | Nome do worker (`endereço.worker`). Versões antigas usavam `"sandra-mine"`. |
+| `worker_name` | `"sm-<computador>"` | Nome do worker (`endereço.worker`). Versões antigas usavam `"sandra-mine"`. |
 | `pool_password` | `"x"` | Senha do Stratum. |
 | `suggest_diff` | `1.0` | Dificuldade de share sugerida (`0` = não enviar). |
 | `cpu_enabled` | `true` | Minerar com a CPU. |

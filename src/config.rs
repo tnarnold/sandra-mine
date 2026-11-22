@@ -72,7 +72,7 @@ impl Default for Config {
 /// Worker name used by the old versions; every machine had the same one.
 pub const OLD_WORKER: &str = "sandra-mine";
 
-/// "sandra-<hostname>", so each machine shows up under its own name on the pool.
+/// "sm-<hostname>", so each machine shows up under its own name on the pool.
 /// Existing configs keep the name they have (serde fills only missing fields).
 fn default_worker() -> String {
     let host: String = gethostname::gethostname()
@@ -89,7 +89,7 @@ fn default_worker() -> String {
         .take(24)
         .collect();
     let host = host.trim_matches('-');
-    if host.is_empty() { OLD_WORKER.into() } else { format!("sandra-{host}") }
+    if host.is_empty() { OLD_WORKER.into() } else { format!("sm-{host}") }
 }
 
 impl Config {

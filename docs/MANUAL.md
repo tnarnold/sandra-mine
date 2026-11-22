@@ -145,7 +145,7 @@ are saved automatically. Changes in the **Pool** section only apply after you cl
 | **Endereço BTC** (BTC address) | Address that receives the reward if you find a block. Use an address **from a wallet you control** (bc1q…, bc1p…, 3… or 1…). Avoid exchange deposit addresses: block rewards are special transactions that only become spendable after 100 confirmations, and exchanges may not credit them. |
 | **Pool** | Pool host. Default `public-pool.io`. |
 | **Porta** (port) | Pool port. `21496` for public-pool.io, `3333` for solo.ckpool.org. |
-| **Worker** | Name of this miner. It's sent as `address.worker`, which lets you tell several machines apart on the pool. New installs use `sandra-<computer-name>`. Leave it empty to send only the address. |
+| **Worker** | Name of this miner. It's sent as `address.worker`, which lets you tell several machines apart on the pool. New installs use `sm-<computer-name>`. Leave it empty to send only the address. |
 | **Senha** (password) | Stratum password. Solo pools ignore it; leave `x`. |
 | **Dif. sugerida** (suggested difficulty) | Share difficulty requested from the pool via `mining.suggest_difficulty`. `0` = don't ask. See below. |
 | **Salvar e reconectar** | Saves the pool fields and reconnects immediately. |
@@ -410,7 +410,7 @@ You can edit it with the app closed. Missing fields use their default values.
 | `btc_address` | `""` | Reward address. |
 | `pool_host` | `"public-pool.io"` | Pool host. |
 | `pool_port` | `21496` | Pool port. |
-| `worker_name` | `"sandra-<computer>"` | Worker name (`address.worker`). Older versions used `"sandra-mine"`. |
+| `worker_name` | `"sm-<computer>"` | Worker name (`address.worker`). Older versions used `"sandra-mine"`. |
 | `pool_password` | `"x"` | Stratum password. |
 | `suggest_diff` | `1.0` | Suggested share difficulty (`0` = don't send). |
 | `cpu_enabled` | `true` | Mine with the CPU. |
