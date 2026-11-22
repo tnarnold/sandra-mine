@@ -102,6 +102,34 @@ pub struct DiffAdjustment {
     pub remaining_secs: f64,
 }
 
+/// One machine mining for the same address, as reported by the pool.
+#[derive(Clone, Debug)]
+pub struct FleetWorker {
+    pub name: String,
+    /// Pool estimate from shares, H/s.
+    pub hashrate: f64,
+    pub best: f64,
+    /// This instance (matched by session id or worker name).
+    pub me: bool,
+}
+
+/// Machines mining for the same address, from the pool's stats API (`fleet.rs`).
+#[derive(Clone, Debug)]
+pub struct Fleet {
+    /// Active machines only.
+    pub workers: Vec<FleetWorker>,
+    /// Hashrate of the other machines, H/s; this PC's live rate is added on screen.
+    pub others: f64,
+    /// Machines counted, this one included.
+    pub machines: usize,
+    /// Best difficulty among the active machines.
+    pub best: f64,
+    pub at: Instant,
+}
+
+/// After this, fleet data is ignored and the screens show this PC only.
+pub const FLEET_STALE: std::time::Duration = std::time::Duration::from_secs(300);
+
 pub struct AtomicF64(AtomicU64);
 impl AtomicF64 {
     pub fn new(v: f64) -> Self {
@@ -173,6 +201,10 @@ pub struct Shared {
     pub pool_connected: AtomicBool,
     pub connected_since: Mutex<Option<Instant>>,
     pub gpu_status: Mutex<GpuStatus>,
+    /// extranonce1 of the current stratum session, hex. public-pool uses it as the
+    /// session id in its stats API, which is how `fleet.rs` finds this machine.
+    pub session_id: Mutex<String>,
+    pub fleet: Mutex<Option<Fleet>>,
     pub net: Mutex<NetInfo>,
     pub log: Mutex<Vec<String>>,
 
@@ -212,6 +244,8 @@ impl Shared {
             pool_connected: AtomicBool::new(false),
             connected_since: Mutex::new(None),
             gpu_status: Mutex::new(GpuStatus::Off),
+            session_id: Mutex::new(String::new()),
+            fleet: Mutex::new(None),
             net: Mutex::new(NetInfo::default()),
             log: Mutex::new(Vec::new()),
             submit_tx,
@@ -254,6 +288,31 @@ impl Shared {
 
     pub fn hashrate(&self) -> f64 {
         self.hashrate_cpu.get() + self.hashrate_gpu.get()
+    }
+
+    /// Fleet data to show on the screens, following `fleet_mode`; `None` = this PC only.
+    pub fn shown_fleet(&self) -> Option<Fleet> {
+        let mode = self.config.read().unwrap().fleet_mode.clone();
+        if mode == "local" {
+            return None;
+        }
+        let f = self.fleet.lock().unwrap().clone()?;
+        (f.at.elapsed() < FLEET_STALE && (mode == "fleet" || f.machines >= 2)).then_some(f)
+    }
+
+    /// Hashrate for the emulated screens: this PC live, plus the other machines when
+    /// the fleet is shown. Returns the number of machines when it is the sum.
+    pub fn screen_hashrate(&self) -> (f64, Option<usize>) {
+        match self.shown_fleet() {
+            Some(f) => (self.hashrate() + f.others, Some(f.machines)),
+            None => (self.hashrate(), None),
+        }
+    }
+
+    /// Best difficulty for the screens: the fleet's when it is shown.
+    pub fn screen_best_diff(&self) -> f64 {
+        let local = self.best_diff.get();
+        self.shown_fleet().map_or(local, |f| local.max(f.best))
     }
 
     pub fn total_hashes(&self) -> u64 {

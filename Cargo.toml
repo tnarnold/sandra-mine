@@ -12,6 +12,7 @@ chrono = { version = "0.4.45", default-features = false, features = ["clock", "s
 crossbeam-channel = "0.5.17"
 dirs = "7.0.0"
 eframe = "0.37.0"
+gethostname = "1.1.0"
 hex = "0.4.3"
 image = { version = "0.25.10", default-features = false, features = ["png"] }
 pollster = "1.0.1"

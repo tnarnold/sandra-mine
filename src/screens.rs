@@ -139,6 +139,18 @@ impl Lcd<'_> {
         let r = Rect::from_min_size(self.pos(x, y), Vec2::new(w, h) * self.s);
         self.p.rect_filled(r.intersect(self.rect), 0.0, color);
     }
+    /// "FROTA ×3": marks a hashrate that is the sum of the machines on this address.
+    /// (x, y) is the top-left corner, on the yellow hashrate panel.
+    fn fleet_badge(&self, n: Option<usize>, x: f32, y: f32) {
+        let Some(n) = n else { return };
+        let text = format!("{} ×{n}", crate::i18n::t().fleet_badge);
+        let font = FontId::new(8.0 * self.s, FontFamily::Name("nerdsans".into()));
+        let galley = self.p.layout_no_wrap(text, font, C_DEDB);
+        let pad = Vec2::new(3.0, 1.0) * self.s;
+        let r = Rect::from_min_size(self.pos(x, y), galley.size() + pad * 2.0);
+        self.p.rect_filled(r, 2.0 * self.s, TFT_BLACK);
+        self.p.galley(r.min + pad, galley, C_DEDB);
+    }
     fn unit(&self, unit: &str, b: LabelBox) {
         let (x0, y0, x1, y1) = b;
         let cx = (x0 + x1) as f32 / 2.0 + 0.5;
@@ -187,14 +199,16 @@ impl Screens {
 
     fn miner(&self, l: &Lcd, s: &Shared) {
         l.bg(&self.miner);
-        let (hr, unit) = hashrate_parts(s.hashrate());
+        let (h, fleet) = s.screen_hashrate();
+        let (hr, unit) = hashrate_parts(h);
         l.digital(&hr, 118.0, 114.0, 35.0, TFT_BLACK, Align2::RIGHT_TOP);
         l.unit(unit, MINER_KHS);
+        l.fleet_badge(fleet, 4.0, 102.0);
         let mhashes = s.total_hashes() as f64 / 1e6;
         let mh = if mhashes < 1e5 { format!("{mhashes:.0}") } else { fmt::si(mhashes) };
         l.digital(&mh, 268.0, 138.0, 18.0, TFT_BLACK, Align2::RIGHT_TOP);
         l.digital(&s.templates.load(Relaxed).to_string(), 186.0, 20.0, 18.0, C_DEDB, Align2::LEFT_TOP);
-        l.digital(&best_diff(s.best_diff.get()), 186.0, 48.0, 18.0, C_DEDB, Align2::LEFT_TOP);
+        l.digital(&best_diff(s.screen_best_diff()), 186.0, 48.0, 18.0, C_DEDB, Align2::LEFT_TOP);
         l.digital(&s.shares32.load(Relaxed).to_string(), 186.0, 76.0, 18.0, C_DEDB, Align2::LEFT_TOP);
         let up = s.started.elapsed().as_secs();
         let t = format!("{}  {:02}:{:02}:{:02}", up / 86400, (up % 86400) / 3600, (up % 3600) / 60, up % 60);
@@ -212,9 +226,11 @@ impl Screens {
 
     fn clock(&self, l: &Lcd, s: &Shared, net: &NetInfo, cur: &str) {
         l.bg(&self.clock);
-        let (hr, unit) = hashrate_parts(s.hashrate());
+        let (h, fleet) = s.screen_hashrate();
+        let (hr, unit) = hashrate_parts(h);
         l.digital(&hr, 94.0, 129.0, 25.0, TFT_BLACK, Align2::RIGHT_TOP);
         l.unit(unit, SMALL_KHS);
+        l.fleet_badge(fleet, 4.0, 117.0);
         l.sans_fit(&price(net, cur), 202.0, 3.0, 13.0, 82.0, TFT_BLACK, Align2::LEFT_TOP);
         l.digital(&height(net), 254.0, 140.0, 18.0, TFT_BLACK, Align2::RIGHT_TOP);
         // FreeSansBold18pt at text size 2
@@ -248,9 +264,11 @@ impl Screens {
 
     fn price(&self, l: &Lcd, s: &Shared, net: &NetInfo, cur: &str) {
         l.bg(&self.price);
-        let (hr, unit) = hashrate_parts(s.hashrate());
+        let (h, fleet) = s.screen_hashrate();
+        let (hr, unit) = hashrate_parts(h);
         l.digital(&hr, 94.0, 129.0, 25.0, TFT_BLACK, Align2::RIGHT_TOP);
         l.unit(unit, SMALL_KHS);
+        l.fleet_badge(fleet, 4.0, 117.0);
         l.digital(&height(net), 254.0, 138.0, 18.0, TFT_WHITE, Align2::RIGHT_TOP);
         l.sans(&now_hm(), 222.0, 3.0, 13.0, TFT_BLACK, Align2::LEFT_TOP);
         // FreeSansBold24pt

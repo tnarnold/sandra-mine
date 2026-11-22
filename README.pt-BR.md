@@ -125,13 +125,13 @@ Todas as opções estão no [manual do usuário](docs/MANUAL.pt-BR.md#5-configur
 Variáveis úteis para desenvolvimento:
 
 - `NERDMINER_CONFIG=/caminho/config.json`: usa outro arquivo de configuração.
-- `NERDMINER_SHOTS=/diretório`: salva capturas (RGBA bruto) de cada tela e encerra.
+- `NERDMINER_SHOTS=/diretório`: salva capturas (RGBA bruto) de cada tela e encerra. `NERDMINER_SHOTS_DELAY=<s>` começa mais tarde (padrão 8).
 - `NERDMINER_TRAY_DUMP=1`: imprime o menu da bandeja (título, dica e cada linha) no stderr a cada atualização.
 - `NERDMINER_LAB=1`: abre o laboratório 3D ao iniciar. Com `NERDMINER_LAB_SHOTS=/diretório`, salva uma captura de cada etapa e encerra.
 - `NERDMINER_LAB_CYCLE=1`: abre e fecha o laboratório a cada 5 s, para conferir a liberação de memória (`once` abre uma única vez).
 - `NERDMINER_LAB_LOOK=dark`: abre o laboratório no fundo escuro.
 - `NERDMINER_LAB_BENCH=1`: registra os quadros por segundo sem limite (`cap` mantém o limite de 30, `live` começa na visão ao vivo).
-- `NERDMINER_RATE_LOG=1`: imprime o hashrate a cada 5 s.
+- `NERDMINER_RATE_LOG=1`: imprime o hashrate a cada 5 s (este PC, o da tela e o tamanho da frota).
 
 ### A pool não conecta
 

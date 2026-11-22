@@ -3,6 +3,7 @@
 mod app;
 mod config;
 mod currency;
+mod fleet;
 mod fmt;
 mod gpu;
 mod i18n;
@@ -27,6 +28,7 @@ fn main() -> eframe::Result {
     miner::spawn_stats(shared.clone());
     gpu::spawn(shared.clone());
     netinfo::spawn(shared.clone());
+    fleet::spawn(shared.clone());
 
     let mut viewport = egui::ViewportBuilder::default()
         .with_title("SandraMine")

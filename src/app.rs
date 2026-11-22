@@ -98,7 +98,7 @@ impl NerdApp {
         }
     }
 
-    /// Debug: NERDMINER_RATE_LOG=1 prints the hashrate every 5 s, lab open or not.
+    /// Debug: NERDMINER_RATE_LOG=1 prints the hashrate (local, on screen, fleet size) every 5 s.
     fn debug_rate_log(shared: &Arc<Shared>) {
         if std::env::var_os("NERDMINER_RATE_LOG").is_none() {
             return;
@@ -106,7 +106,8 @@ impl NerdApp {
         let shared = shared.clone();
         std::thread::spawn(move || loop {
             std::thread::sleep(std::time::Duration::from_secs(5));
-            eprintln!("rate {:.0}", shared.hashrate());
+            let (screen, fleet) = shared.screen_hashrate();
+            eprintln!("rate {:.0} screen {:.0} fleet {:?}", shared.hashrate(), screen, fleet);
         });
     }
 
@@ -169,6 +170,8 @@ impl NerdApp {
         cfg.tx_vbytes = self.draft.tx_vbytes;
         cfg.currency = self.draft.currency.clone();
         cfg.language = self.draft.language.clone();
+        cfg.fleet_mode = self.draft.fleet_mode.clone();
+        cfg.fleet_url = self.draft.fleet_url.trim().to_string();
         i18n::set(i18n::resolve(&cfg.language));
         cfg.save();
     }
@@ -291,7 +294,9 @@ impl NerdApp {
     fn debug_shots(&mut self, ctx: &egui::Context) {
         let Ok(dir) = std::env::var("NERDMINER_SHOTS") else { return };
         let t = self.shared.started.elapsed().as_secs_f32();
-        let step = ((t - 8.0) / 1.5).floor();
+        // NERDMINER_SHOTS_DELAY=<secs> waits longer, e.g. for the fleet data to arrive.
+        let delay = std::env::var("NERDMINER_SHOTS_DELAY").ok().and_then(|v| v.parse().ok()).unwrap_or(8.0);
+        let step = ((t - delay) / 1.5).floor();
         ctx.request_repaint_after(Duration::from_millis(100));
         if step < 0.0 {
             return;
@@ -402,6 +407,73 @@ impl NerdApp {
         });
     }
 
+    /// "My fleet": what the screens show, plus the machines the pool reports.
+    /// Returns true when a setting changed (saved by the caller).
+    fn fleet_settings(&mut self, ui: &mut egui::Ui) -> bool {
+        let mut changed = false;
+        ui.separator();
+        ui.heading(t().h_fleet);
+        ui.horizontal(|ui| {
+            ui.label(t().fleet_screen).on_hover_text(t().fleet_tip);
+            for (mode, label) in [("auto", t().fleet_auto), ("local", t().fleet_local), ("fleet", t().fleet_all)] {
+                if ui.selectable_label(self.draft.fleet_mode == mode, label).clicked() {
+                    self.draft.fleet_mode = mode.into();
+                    changed = true;
+                }
+            }
+        });
+        if self.draft.fleet_mode == "local" {
+            return changed;
+        }
+        let known = {
+            let mut c = self.shared.config.read().unwrap().clone();
+            c.fleet_url.clear();
+            crate::fleet::api_url(&c).is_some()
+        };
+        if !known || !self.draft.fleet_url.trim().is_empty() {
+            ui.horizontal(|ui| {
+                ui.label(t().fleet_url);
+                changed |= ui
+                    .add(
+                        egui::TextEdit::singleline(&mut self.draft.fleet_url)
+                            .hint_text("http://umbrel.local:…/api/client/{address}")
+                            .desired_width(260.0),
+                    )
+                    .on_hover_text(t().fleet_url_tip)
+                    .lost_focus();
+            });
+        }
+        let cfg_worker = self.shared.config.read().unwrap().worker_name.trim().to_string();
+        match self.shared.fleet.lock().unwrap().clone() {
+            Some(f) => {
+                let (v, u) = crate::fmt::hashrate(self.shared.hashrate() + f.others);
+                ui.label(fill(t().fleet_total, &[&f.machines, &format!("{v} {u}")]));
+                egui::Grid::new("fleet").num_columns(3).spacing([12.0, 2.0]).show(ui, |ui| {
+                    for w in &f.workers {
+                        let name = if w.me { format!("{} ({})", w.name, t().fleet_me) } else { w.name.clone() };
+                        // This PC: live rate; others: the pool's estimate.
+                        let h = if w.me { self.shared.hashrate() } else { w.hashrate };
+                        let (v, u) = crate::fmt::hashrate(h);
+                        ui.monospace(egui::RichText::new(name).size(11.0));
+                        ui.monospace(egui::RichText::new(format!("{v} {u}")).size(11.0));
+                        ui.monospace(egui::RichText::new(crate::fmt::diff(w.best)).size(11.0).weak());
+                        ui.end_row();
+                    }
+                });
+            }
+            None if known || !self.draft.fleet_url.trim().is_empty() => {
+                ui.weak(t().fleet_waiting);
+            }
+            None => {
+                ui.weak(t().fleet_unknown_pool);
+            }
+        }
+        if cfg_worker.is_empty() || cfg_worker == crate::config::OLD_WORKER {
+            ui.weak(t().fleet_name_tip);
+        }
+        changed
+    }
+
     fn settings(&mut self, ui: &mut egui::Ui) {
         egui::ScrollArea::vertical().show(ui, |ui| {
             ui.add_space(4.0);
@@ -439,9 +511,10 @@ impl NerdApp {
                 }
             });
 
+            let mut changed = self.fleet_settings(ui);
+
             ui.separator();
             ui.heading(t().h_mining);
-            let mut changed = false;
             ui.horizontal(|ui| {
                 ui.label(t().device);
                 let (c, g) = (self.draft.cpu_enabled, self.draft.gpu_enabled);

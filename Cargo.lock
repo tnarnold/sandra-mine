@@ -3065,6 +3065,7 @@ dependencies = [
  "crossbeam-channel",
  "dirs",
  "eframe",
+ "gethostname",
  "hex",
  "image",
  "pollster",

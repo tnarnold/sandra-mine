@@ -32,6 +32,12 @@ pub struct Config {
     pub currency: String,
     /// UI language: "auto" (system), or a code from `i18n::Lang` ("pt-BR", "en").
     pub language: String,
+    /// Hashrate on the emulated screens: "auto" (fleet when 2+ machines mine for the
+    /// same address), "local" (this PC only) or "fleet" (always the sum).
+    pub fleet_mode: String,
+    /// Stats URL of a pool without a known API (e.g. public-pool on Umbrel), with
+    /// `{address}` where the BTC address goes. Empty = pick by `pool_host`.
+    pub fleet_url: String,
 }
 
 impl Default for Config {
@@ -41,7 +47,7 @@ impl Default for Config {
             pool_host: "public-pool.io".into(),
             pool_port: 21496,
             btc_address: String::new(),
-            worker_name: "sandra-mine".into(),
+            worker_name: default_worker(),
             pool_password: "x".into(),
             suggest_diff: 1.0,
             cpu_enabled: true,
@@ -57,8 +63,33 @@ impl Default for Config {
             tx_vbytes: 141,
             currency: crate::currency::default_for_system(),
             language: "auto".into(),
+            fleet_mode: "auto".into(),
+            fleet_url: String::new(),
         }
     }
+}
+
+/// Worker name used by the old versions; every machine had the same one.
+pub const OLD_WORKER: &str = "sandra-mine";
+
+/// "sandra-<hostname>", so each machine shows up under its own name on the pool.
+/// Existing configs keep the name they have (serde fills only missing fields).
+fn default_worker() -> String {
+    let host: String = gethostname::gethostname()
+        .to_string_lossy()
+        .split('.')
+        .next()
+        .unwrap_or_default()
+        .chars()
+        .filter_map(|c| match c.to_ascii_lowercase() {
+            c @ ('a'..='z' | '0'..='9') => Some(c),
+            '-' | '_' | ' ' => Some('-'),
+            _ => None,
+        })
+        .take(24)
+        .collect();
+    let host = host.trim_matches('-');
+    if host.is_empty() { OLD_WORKER.into() } else { format!("sandra-{host}") }
 }
 
 impl Config {

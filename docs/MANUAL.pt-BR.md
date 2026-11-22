@@ -141,7 +141,7 @@ Mudanças na seção **Pool** só valem depois de clicar em **Salvar e reconecta
 | **Endereço BTC** | Endereço que recebe a recompensa se você achar um bloco. Use um endereço **de uma carteira que você controla** (bc1q…, bc1p…, 3… ou 1…). Evite endereços de depósito de corretora: a recompensa de bloco é uma transação especial que só pode ser gasta depois de 100 confirmações, e corretoras podem não creditá-la. |
 | **Pool** | Endereço da pool. Padrão `public-pool.io`. |
 | **Porta** | Porta da pool. `21496` para public-pool.io, `3333` para solo.ckpool.org. |
-| **Worker** | Nome deste minerador. É enviado como `endereço.worker`, o que permite distinguir várias máquinas na pool. Deixe vazio para enviar só o endereço. |
+| **Worker** | Nome deste minerador. É enviado como `endereço.worker`, o que permite distinguir várias máquinas na pool. Instalações novas usam `sandra-<nome-do-computador>`. Deixe vazio para enviar só o endereço. |
 | **Senha** | Senha do Stratum. Pools solo ignoram; deixe `x`. |
 | **Dif. sugerida** | Dificuldade de share pedida à pool via `mining.suggest_difficulty`. `0` = não pedir. Veja abaixo. |
 | **Salvar e reconectar** | Salva os campos da pool e reconecta na hora. |
@@ -159,6 +159,29 @@ segundos por share ≈ dificuldade × 4,3 bilhões ÷ hashrate
 A 80 MH/s, dificuldade `1` dá cerca de um share por minuto, que é o padrão. Shares não mudam sua
 chance de achar um bloco. A pool pode ignorar a sugestão e impor a própria dificuldade; o valor em
 uso aparece no log.
+
+### Minha frota
+
+Se você roda o SandraMine em vários computadores com o **mesmo endereço BTC**, as chances já se
+somam: cada hash de cada máquina é um bilhete no seu nome. Esta seção faz as telas mostrarem essa
+soma. O app pergunta à pool, a cada minuto, quais máquinas estão minerando para o seu endereço.
+
+| Controle | Descrição |
+|---|---|
+| **Hashrate na tela** | **Automático** (padrão): mostra a soma quando houver 2 ou mais máquinas. **Este PC**: só este computador, como antes. **Frota**: sempre a soma. |
+| **Consulta da pool** | Só aparece em pools sem consulta conhecida, como uma public-pool própria no Umbrel. Informe o endereço da API com `{address}` no lugar do endereço, por exemplo `http://umbrel.local:<porta>/api/client/{address}`. |
+| Lista | Máquinas ativas, com hashrate e melhor dificuldade. Este PC aparece primeiro, com o valor ao vivo. |
+
+Quando a soma está na tela, as telas Miner, Clock e Price mostram o selo **FROTA ×N** sobre o
+hashrate, e a melhor dificuldade da tela Miner passa a ser a da frota. Total de hashes, templates,
+shares, tempo ligado e blocos continuam sendo deste PC.
+
+A parte deste PC vem do contador local, exato e ao vivo; a das outras máquinas é a estimativa da
+pool, feita a partir dos shares, por isso oscila e atrasa alguns minutos. Funciona com
+public-pool.io e solo.ckpool.org sem configurar nada. Na public-pool, o app se reconhece na lista
+pela sessão, então funciona mesmo se todas as máquinas tiverem o mesmo nome; na ckpool, dê um
+nome de worker diferente para cada máquina. Se a pool não responder, as telas voltam a mostrar só
+este PC.
 
 ### Mineração
 
@@ -345,6 +368,8 @@ Pools solo mostram suas estatísticas pelo endereço:
 - solo.ckpool.org: `https://solo.ckpool.org/users/<seu-endereço>`
 
 Cada nome de worker aparece separado, o que ajuda quando você roda o emulador em várias máquinas.
+A soma das máquinas também aparece nas próprias telas do app (veja *Minha frota* nas
+Configurações).
 O hashrate mostrado pela pool é uma estimativa feita a partir dos shares, por isso oscila mais que
 o número da tela.
 
@@ -386,7 +411,7 @@ Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 | `btc_address` | `""` | Endereço da recompensa. |
 | `pool_host` | `"public-pool.io"` | Endereço da pool. |
 | `pool_port` | `21496` | Porta da pool. |
-| `worker_name` | `"sandra-mine"` | Nome do worker (`endereço.worker`). |
+| `worker_name` | `"sandra-<computador>"` | Nome do worker (`endereço.worker`). Versões antigas usavam `"sandra-mine"`. |
 | `pool_password` | `"x"` | Senha do Stratum. |
 | `suggest_diff` | `1.0` | Dificuldade de share sugerida (`0` = não enviar). |
 | `cpu_enabled` | `true` | Minerar com a CPU. |
@@ -402,6 +427,8 @@ Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 | `tx_vbytes` | `141` | Tamanho da transação usado no "custo para enviar", em vB. |
 | `currency` | pelo idioma do sistema | `BRL`, `USD`, `EUR`, `GBP`, `CAD`, `CHF`, `AUD` ou `JPY`. |
 | `language` | `"auto"` | `"auto"` (sistema), `"pt-BR"` ou `"en"`. |
+| `fleet_mode` | `"auto"` | Hashrate nas telas: `"auto"`, `"local"` (este PC) ou `"fleet"` (soma). |
+| `fleet_url` | `""` | Consulta de uma pool própria, com `{address}`. Vazio = escolhida pela pool. |
 
 Para voltar tudo ao padrão, feche o app e apague o arquivo.
 

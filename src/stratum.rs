@@ -70,6 +70,7 @@ fn session(shared: &Arc<Shared>, generation: u64) -> Result<(), String> {
     send(json!({"id": 1, "method": "mining.subscribe", "params": [AGENT]}))?;
 
     let mut extranonce1: Vec<u8> = vec![];
+    shared.session_id.lock().unwrap().clear();
     let mut en2_size = 4usize;
     let mut pool_diff = 1.0f64;
     let mut next_id = 10u64;
@@ -143,6 +144,7 @@ fn session(shared: &Arc<Shared>, generation: u64) -> Result<(), String> {
                 "mining.set_extranonce" => {
                     if let Some(e1) = params.get(0).and_then(Value::as_str) {
                         extranonce1 = hex::decode(e1).unwrap_or_default();
+                        *shared.session_id.lock().unwrap() = e1.to_ascii_lowercase();
                     }
                     if let Some(n) = params.get(1).and_then(Value::as_u64) {
                         en2_size = n as usize;
@@ -161,6 +163,7 @@ fn session(shared: &Arc<Shared>, generation: u64) -> Result<(), String> {
             1 => {
                 let e1 = result.get(1).and_then(Value::as_str).ok_or("subscribe inválido")?;
                 extranonce1 = hex::decode(e1).map_err(|e| e.to_string())?;
+                *shared.session_id.lock().unwrap() = e1.to_ascii_lowercase();
                 en2_size = result.get(2).and_then(Value::as_u64).unwrap_or(4) as usize;
                 if cfg.suggest_diff > 0.0 {
                     send(json!({"id": 3, "method": "mining.suggest_difficulty", "params": [cfg.suggest_diff]}))?;

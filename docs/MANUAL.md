@@ -145,7 +145,7 @@ are saved automatically. Changes in the **Pool** section only apply after you cl
 | **Endereço BTC** (BTC address) | Address that receives the reward if you find a block. Use an address **from a wallet you control** (bc1q…, bc1p…, 3… or 1…). Avoid exchange deposit addresses: block rewards are special transactions that only become spendable after 100 confirmations, and exchanges may not credit them. |
 | **Pool** | Pool host. Default `public-pool.io`. |
 | **Porta** (port) | Pool port. `21496` for public-pool.io, `3333` for solo.ckpool.org. |
-| **Worker** | Name of this miner. It's sent as `address.worker`, which lets you tell several machines apart on the pool. Leave it empty to send only the address. |
+| **Worker** | Name of this miner. It's sent as `address.worker`, which lets you tell several machines apart on the pool. New installs use `sandra-<computer-name>`. Leave it empty to send only the address. |
 | **Senha** (password) | Stratum password. Solo pools ignore it; leave `x`. |
 | **Dif. sugerida** (suggested difficulty) | Share difficulty requested from the pool via `mining.suggest_difficulty`. `0` = don't ask. See below. |
 | **Salvar e reconectar** | Saves the pool fields and reconnects immediately. |
@@ -163,6 +163,28 @@ seconds per share ≈ difficulty × 4.3 billion ÷ hashrate
 At 80 MH/s, difficulty `1` gives about one share per minute, which is the default. Shares don't
 change your chance of finding a block. The pool may ignore the suggestion and impose its own
 difficulty; the value in use appears in the log.
+
+### My fleet
+
+If you run SandraMine on several computers with the **same BTC address**, your chances already add
+up: every hash from every machine is a ticket in your name. This section makes the screens show
+that sum. Once a minute the app asks the pool which machines are mining for your address.
+
+| Control | Description |
+|---|---|
+| **Hashrate on screen** | **Automatic** (default): shows the sum when there are 2 or more machines. **This PC**: this computer only, as before. **Fleet**: always the sum. |
+| **Pool stats URL** | Only shown for pools without a known API, such as your own public-pool on Umbrel. Enter the API URL with `{address}` where the address goes, e.g. `http://umbrel.local:<port>/api/client/{address}`. |
+| List | Active machines with hashrate and best difficulty. This PC comes first, with its live value. |
+
+While the sum is on screen, the Miner, Clock and Price screens show a **FLEET ×N** badge over the
+hashrate, and the Miner screen's best difficulty becomes the fleet's. Total hashes, templates,
+shares, uptime and blocks stay this PC's.
+
+This PC's part comes from the local counter, exact and live; the other machines' part is the
+pool's estimate from shares, so it fluctuates and lags a few minutes. It works with public-pool.io
+and solo.ckpool.org with no setup. On public-pool the app finds itself in the list by its session,
+so it works even if every machine has the same name; on ckpool, give each machine a different
+worker name. If the pool doesn't answer, the screens go back to this PC only.
 
 ### Mineração (mining)
 
@@ -346,6 +368,7 @@ Solo pools show your statistics by address:
 - solo.ckpool.org: `https://solo.ckpool.org/users/<your-address>`
 
 Each worker name appears separately, which helps when you run the emulator on several machines.
+The sum of the machines also shows on the app's own screens (see *My fleet* in Settings).
 The pool's reported hashrate is an estimate based on shares, so it fluctuates more than the
 number on the screen.
 
@@ -387,7 +410,7 @@ You can edit it with the app closed. Missing fields use their default values.
 | `btc_address` | `""` | Reward address. |
 | `pool_host` | `"public-pool.io"` | Pool host. |
 | `pool_port` | `21496` | Pool port. |
-| `worker_name` | `"sandra-mine"` | Worker name (`address.worker`). |
+| `worker_name` | `"sandra-<computer>"` | Worker name (`address.worker`). Older versions used `"sandra-mine"`. |
 | `pool_password` | `"x"` | Stratum password. |
 | `suggest_diff` | `1.0` | Suggested share difficulty (`0` = don't send). |
 | `cpu_enabled` | `true` | Mine with the CPU. |
@@ -403,6 +426,8 @@ You can edit it with the app closed. Missing fields use their default values.
 | `tx_vbytes` | `141` | Transaction size used for the "cost of sending" estimate, in vB. |
 | `currency` | from system language | `BRL`, `USD`, `EUR`, `GBP`, `CAD`, `CHF`, `AUD` or `JPY`. |
 | `language` | `"auto"` | `"auto"` (system), `"pt-BR"` or `"en"`. |
+| `fleet_mode` | `"auto"` | Hashrate on the screens: `"auto"`, `"local"` (this PC) or `"fleet"` (sum). |
+| `fleet_url` | `""` | Stats URL of your own pool, with `{address}`. Empty = chosen by pool. |
 
 To reset everything, quit the app and delete the file.
 
