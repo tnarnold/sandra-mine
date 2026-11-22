@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Renders the app icon (same design as src/tray.rs::icon_rgba) as a 1024x1024 PNG."""
+"""Renders the app icon (same design as src/tray.rs::icon_rgba) as PNG.
+
+    scripts/make_icon.py out.png            -> 1024x1024 (source for AppIcon.icns)
+    scripts/make_icon.py --linux DIR        -> DIR/sandra-mine-<N>.png for the hicolor sizes
+"""
 import struct, sys, zlib
 
 def render(size):
@@ -31,5 +35,13 @@ def write_png(path, size, px):
         f.write(b"\x89PNG\r\n\x1a\n" + ch(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0))
                 + ch(b"IDAT", zlib.compress(raw, 9)) + ch(b"IEND", b""))
 
+LINUX_SIZES = (16, 22, 24, 32, 48, 64, 128, 256, 512)
+
 if __name__ == "__main__":
-    write_png(sys.argv[1], 1024, render(1024))
+    if sys.argv[1] == "--linux":
+        import os
+        os.makedirs(sys.argv[2], exist_ok=True)
+        for n in LINUX_SIZES:
+            write_png(os.path.join(sys.argv[2], f"sandra-mine-{n}.png"), n, render(n))
+    else:
+        write_png(sys.argv[1], 1024, render(1024))

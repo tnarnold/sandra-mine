@@ -43,6 +43,8 @@ jobs:
           V=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
           mkdir -p dist/sandra-mine
           cp target/release/sandra-mine README.md LICENSE dist/sandra-mine/
+          cp packaging/linux/install.sh packaging/linux/sandra-mine.desktop dist/sandra-mine/
+          cp -r assets/icon/linux dist/sandra-mine/icons
           tar -C dist -czf "dist/SandraMine-$V-linux-x86_64.tar.gz" sandra-mine
       - uses: actions/upload-artifact@v4
         with:

@@ -356,7 +356,14 @@ Turn on **Iniciar escondido na bandeja** (start hidden) so the app starts straig
 - **macOS**: System Settings → General → Login Items → **+** → choose *SandraMine*.
 - **Windows**: press `Win + R`, type `shell:startup`, and place a shortcut to `sandra-mine.exe`
   in that folder.
-- **Linux**: create `~/.config/autostart/sandra-mine.desktop`:
+- **Linux**: if you installed with `install.sh`, copy its menu entry to autostart:
+
+  ```sh
+  mkdir -p ~/.config/autostart
+  cp ~/.local/share/applications/sandra-mine.desktop ~/.config/autostart/
+  ```
+
+  Otherwise create `~/.config/autostart/sandra-mine.desktop`:
 
   ```ini
   [Desktop Entry]

@@ -66,7 +66,16 @@ Baixe o instalador da sua plataforma na página [Releases](https://github.com/tn
   Apple, na primeira vez clique com o botão direito no app → **Abrir** → **Abrir** (ou rode
   `xattr -dr com.apple.quarantine "/Applications/SandraMine.app"`).
 - **Windows**: `...-windows-x86_64.zip`, extraia e rode `sandra-mine.exe`.
-- **Linux**: `...-linux-x86_64.tar.gz`, extraia e rode `./sandra-mine`.
+- **Linux**: `...-linux-x86_64.tar.gz`, extraia e rode `./install.sh`. Ele instala para o seu
+  usuário (sem sudo) o binário em `~/.local/bin`, o atalho no menu de aplicativos e os ícones.
+  Para remover: `./install.sh --uninstall`. Também dá para rodar `./sandra-mine` direto, sem instalar.
+
+### Instalar a partir do código (Linux)
+
+```sh
+cargo build --release
+packaging/linux/install.sh   # mesmo instalador do .tar.gz; PREFIX=/usr/local para o sistema todo
+```
 
 ### Gerar o .dmg localmente
 

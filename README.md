@@ -68,7 +68,16 @@ Download the installer for your platform from the
   so the first time right-click the app → **Open** → **Open** (or run
   `xattr -dr com.apple.quarantine "/Applications/SandraMine.app"`).
 - **Windows**: `...-windows-x86_64.zip`, extract it and run `sandra-mine.exe`.
-- **Linux**: `...-linux-x86_64.tar.gz`, extract it and run `./sandra-mine`.
+- **Linux**: `...-linux-x86_64.tar.gz`, extract it and run `./install.sh`. It installs for your
+  user (no sudo) the binary in `~/.local/bin`, the application menu entry and the icons.
+  To remove it: `./install.sh --uninstall`. You can also run `./sandra-mine` directly without installing.
+
+### Install from source (Linux)
+
+```sh
+cargo build --release
+packaging/linux/install.sh   # same installer as the .tar.gz; PREFIX=/usr/local for system-wide
+```
 
 ### Build the .dmg locally
 

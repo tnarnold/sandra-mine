@@ -355,7 +355,14 @@ Ative **Iniciar escondido na bandeja** para o app abrir direto na bandeja e depo
 - **macOS**: Ajustes do Sistema → Geral → Itens de Início → **+** → escolha *SandraMine*.
 - **Windows**: aperte `Win + R`, digite `shell:startup` e coloque nessa pasta um atalho para
   `sandra-mine.exe`.
-- **Linux**: crie `~/.config/autostart/sandra-mine.desktop`:
+- **Linux**: se instalou com o `install.sh`, copie o atalho do menu para o autostart:
+
+  ```sh
+  mkdir -p ~/.config/autostart
+  cp ~/.local/share/applications/sandra-mine.desktop ~/.config/autostart/
+  ```
+
+  Senão, crie `~/.config/autostart/sandra-mine.desktop`:
 
   ```ini
   [Desktop Entry]

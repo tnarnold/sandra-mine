@@ -30,6 +30,8 @@ fn main() -> eframe::Result {
 
     let mut viewport = egui::ViewportBuilder::default()
         .with_title("SandraMine")
+        // Wayland app_id / X11 WM_CLASS: matches sandra-mine.desktop so the taskbar shows its icon.
+        .with_app_id("sandra-mine")
         .with_inner_size(app::COMPACT * 1.4)
         .with_resizable(false)
         .with_decorations(false)

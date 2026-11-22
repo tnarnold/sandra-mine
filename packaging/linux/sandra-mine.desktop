@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=SandraMine
+GenericName=Bitcoin Solo Miner
+GenericName[pt_BR]=Minerador solo de Bitcoin
+Comment=NerdMiner desktop emulator: solo Bitcoin lottery miner
+Comment[pt_BR]=Emulador desktop do NerdMiner: minerador solo de Bitcoin (loteria)
+Exec=sandra-mine
+Icon=sandra-mine
+Terminal=false
+Categories=Office;Finance;
+Keywords=bitcoin;btc;miner;mining;nerdminer;
+StartupWMClass=sandra-mine
