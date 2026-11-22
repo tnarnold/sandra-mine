@@ -78,6 +78,7 @@ function renderHeader() {
         <a href="https://github.com/tnarnold/sandra-mine">GitHub</a>
         <a href="https://github.com/tnarnold/sandra-mine/releases">Releases</a>
         <a href="${esc(t("ui.manual_url"))}">${esc(t("ui.manual"))}</a>
+        <a href="../sandra/">${esc(t("ui.memorial"))}</a>
         <a href="https://github.com/BitMaker-hub/NerdMiner_v2">NerdMiner v2</a>
         <a href="https://gobtc.com.br">Go BTC</a>
       </div>

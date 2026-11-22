@@ -437,3 +437,30 @@ footer .cols { display: flex; flex-wrap: wrap; gap: 14px 30px; }
   .hero::after { background: linear-gradient(0deg, var(--bg) 5%, rgba(5,5,5,.75) 55%, rgba(5,5,5,.45) 100%); }
 }
 .levels td:first-child { white-space: nowrap; }
+
+/* ---------- in memoriam ---------- */
+.memorial .wrap { display: grid; grid-template-columns: minmax(220px, 380px) 1fr; gap: clamp(28px, 5vw, 72px); align-items: center; }
+.memorial-photo { margin: 0; position: relative; }
+.memorial-photo img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 50%; border: 1px solid var(--line); box-shadow: 0 0 0 10px var(--bg-2), 0 0 80px rgba(255,138,61,.16); }
+.memorial-text h2 { font-size: clamp(36px, 5vw, 64px); margin: 18px 0 14px; }
+.memorial-sub { font-style: italic; color: var(--muted); font-size: 17px; margin: 0 0 24px; max-width: 620px; }
+.memorial-text p { max-width: 620px; line-height: 1.7; }
+.memorial-text strong { color: var(--text); }
+.memorial-quote { margin: 28px 0 30px; padding: 0 0 0 18px; border-left: 2px solid var(--orange); font-style: italic; font-size: 18px; color: var(--text); max-width: 620px; }
+@media (max-width: 760px) {
+  .memorial .wrap { grid-template-columns: 1fr; }
+  .memorial-photo { max-width: 240px; margin: 0 auto; }
+}
+
+/* full story page */
+.story { padding: 140px 0 90px; }
+.story .wrap { max-width: 760px; }
+.story-photo { display: block; width: min(260px, 70%); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 50%; margin: 0 auto 34px; border: 1px solid var(--line); box-shadow: 0 0 0 10px var(--bg-2), 0 0 80px rgba(255,138,61,.16); }
+.story h1 { font-size: clamp(40px, 7vw, 76px); text-align: center; margin: 16px 0 14px; }
+.story .label { display: flex; justify-content: center; }
+.story .memorial-sub { text-align: center; margin: 0 auto 48px; }
+.story-body p { font-size: 18px; line-height: 1.8; margin: 0 0 1.2em; }
+.story-body strong { color: var(--text); }
+.story-body .sign { margin-top: 2.2em; }
+.story .memorial-quote { margin: 2em 0; }
+.story .back { margin-top: 40px; text-align: center; }

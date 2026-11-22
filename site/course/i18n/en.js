@@ -7,6 +7,7 @@ export default {
     page_description: "A free, animated, step-by-step course on how Bitcoin mining works, with live network data.",
     nav: { lottery: "Lottery mining", features: "Features", status: "Status", lab: "Lab", course: "Course", download: "Download", setup: "Setup", faq: "FAQ" },
     footer_note: "MIT licensed. Interface based on NerdMiner v2 © 2023 BitMaker (MIT). Network data by mempool.space. Not affiliated with the original project.",
+    memorial: "In memory of Sandra",
     manual: "Manual",
     manual_url: "https://github.com/tnarnold/sandra-mine/blob/main/docs/MANUAL.md",
     course: "Course",

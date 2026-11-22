@@ -6,6 +6,7 @@ export default {
     page_description: "Curso gratuito, animado e passo a passo sobre como funciona a mineração de Bitcoin, com dados reais da rede.",
     nav: { lottery: "Loteria", features: "Recursos", status: "Status", lab: "Laboratório", course: "Curso", download: "Download", setup: "Configurar", faq: "FAQ" },
     footer_note: "Licença MIT. Interface baseada no NerdMiner v2 © 2023 BitMaker (MIT). Dados da rede por mempool.space. Sem vínculo com o projeto original.",
+    memorial: "Em memória de Sandra",
     manual: "Manual",
     manual_url: "https://github.com/tnarnold/sandra-mine/blob/main/docs/MANUAL.pt-BR.md",
     course: "Curso",
