@@ -38,6 +38,9 @@ pub struct Config {
     /// Stats URL of a pool without a known API (e.g. public-pool on Umbrel), with
     /// `{address}` where the BTC address goes. Empty = pick by `pool_host`.
     pub fleet_url: String,
+    /// Mining threads run at the lowest CPU priority (Linux/Android: SCHED_IDLE + nice 19),
+    /// so they only use CPU time nothing else wants.
+    pub low_priority: bool,
 }
 
 impl Default for Config {
@@ -65,6 +68,7 @@ impl Default for Config {
             language: "auto".into(),
             fleet_mode: "auto".into(),
             fleet_url: String::new(),
+            low_priority: false,
         }
     }
 }
@@ -119,14 +123,19 @@ impl Config {
                 let _ = std::fs::copy(legacy, &path);
             }
         }
-        std::fs::read_to_string(path)
-            .ok()
-            .and_then(|s| serde_json::from_str(&s).ok())
-            .unwrap_or_default()
+        Self::load_from(&path).unwrap_or_default()
+    }
+
+    /// Reads a config file; `None` if it is missing or invalid (missing fields get defaults).
+    pub fn load_from(path: &std::path::Path) -> Option<Config> {
+        std::fs::read_to_string(path).ok().and_then(|s| serde_json::from_str(&s).ok())
     }
 
     pub fn save(&self) {
-        let p = Self::path();
+        self.save_to(&Self::path());
+    }
+
+    pub fn save_to(&self, p: &std::path::Path) {
         if let Some(dir) = p.parent() {
             let _ = std::fs::create_dir_all(dir);
         }

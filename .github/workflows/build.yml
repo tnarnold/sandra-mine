@@ -31,7 +31,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxkbcommon-dev libwayland-dev libx11-dev libxcursor-dev libxrandr-dev libxi-dev libgl1-mesa-dev libvulkan-dev libdbus-1-dev pkg-config
       - name: Test (CPU hashing / header)
-        run: cargo test --release -- --skip gpu
+        run: cargo test --workspace --release -- --skip gpu
       - name: Build
         run: cargo build --release
       - uses: actions/upload-artifact@v4

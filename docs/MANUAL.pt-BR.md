@@ -429,6 +429,7 @@ Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 | `language` | `"auto"` | `"auto"` (sistema), `"pt-BR"` ou `"en"`. |
 | `fleet_mode` | `"auto"` | Hashrate nas telas: `"auto"`, `"local"` (este PC) ou `"fleet"` (soma). |
 | `fleet_url` | `""` | Consulta de uma pool própria, com `{address}`. Vazio = escolhida pela pool. |
+| `low_priority` | `false` | Threads de mineração na menor prioridade de CPU (Linux: `SCHED_IDLE` + nice 19): só usam CPU que nada mais quer. Vale a partir da próxima abertura. |
 
 Para voltar tudo ao padrão, feche o app e apague o arquivo.
 

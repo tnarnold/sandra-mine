@@ -428,6 +428,7 @@ You can edit it with the app closed. Missing fields use their default values.
 | `language` | `"auto"` | `"auto"` (system), `"pt-BR"` or `"en"`. |
 | `fleet_mode` | `"auto"` | Hashrate on the screens: `"auto"`, `"local"` (this PC) or `"fleet"` (sum). |
 | `fleet_url` | `""` | Stats URL of your own pool, with `{address}`. Empty = chosen by pool. |
+| `low_priority` | `false` | Mining threads at the lowest CPU priority (Linux: `SCHED_IDLE` + nice 19): they only use CPU time nothing else wants. Takes effect on the next start. |
 
 To reset everything, quit the app and delete the file.
 

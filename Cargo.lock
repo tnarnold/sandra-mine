@@ -3057,24 +3057,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "sandra-core"
+version = "0.4.0"
+dependencies = [
+ "cc",
+ "chrono",
+ "crossbeam-channel",
+ "dirs",
+ "gethostname",
+ "hex",
+ "libc",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sys-locale",
+ "ureq",
+]
+
+[[package]]
 name = "sandra-mine"
 version = "0.4.0"
 dependencies = [
  "bytemuck",
  "chrono",
  "crossbeam-channel",
- "dirs",
  "eframe",
- "gethostname",
  "hex",
  "image",
  "pollster",
- "serde",
- "serde_json",
+ "sandra-core",
  "sha2",
- "sys-locale",
  "tray-icon",
- "ureq",
  "wgpu",
 ]
 

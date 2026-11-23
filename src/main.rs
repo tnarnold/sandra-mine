@@ -1,20 +1,12 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 mod app;
-mod config;
-mod currency;
-mod fleet;
-mod fmt;
 mod gpu;
-mod i18n;
 mod lab;
-mod miner;
-mod netinfo;
 mod screens;
-mod state;
-mod stratum;
 mod tray;
-mod work;
+
+use sandra_core::{config, currency, fleet, fmt, i18n, miner, netinfo, state, stratum, work};
 
 use eframe::egui;
 

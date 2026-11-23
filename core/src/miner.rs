@@ -29,7 +29,27 @@ fn active(shared: &Shared, idx: usize) -> bool {
         && idx < shared.cpu_threads.load(Relaxed)
 }
 
+/// Lowers the calling thread to the idlest priority the OS allows. Unprivileged on Linux:
+/// SCHED_IDLE (only runs when a CPU would otherwise idle) and nice 19 as a fallback.
+/// Called through the raw syscall because musl doesn't implement `sched_setscheduler`.
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn lower_priority() {
+    // SAFETY: plain syscalls on the calling thread with a zeroed, valid sched_param.
+    unsafe {
+        let param: libc::sched_param = std::mem::zeroed();
+        libc::syscall(libc::SYS_sched_setscheduler, 0, libc::SCHED_IDLE, &param as *const _);
+        let tid = libc::syscall(libc::SYS_gettid) as libc::id_t;
+        libc::setpriority(libc::PRIO_PROCESS, tid, 19);
+    }
+}
+
+#[cfg(not(any(target_os = "linux", target_os = "android")))]
+fn lower_priority() {}
+
 fn cpu_worker(shared: Arc<Shared>, idx: usize) {
+    if shared.config.read().unwrap().low_priority {
+        lower_priority();
+    }
     'outer: loop {
         if !active(&shared, idx) {
             std::thread::sleep(Duration::from_millis(250));
