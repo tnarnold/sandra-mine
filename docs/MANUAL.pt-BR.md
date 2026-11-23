@@ -396,6 +396,9 @@ Ative **Iniciar escondido na bandeja** para o app abrir direto na bandeja e depo
   Exec=/caminho/para/sandra-mine
   ```
 
+Numa máquina sem tela (servidor, NAS, Raspberry Pi), use o `sandra-mine-headless`, que pode rodar
+como serviço do systemd. Veja "Sem interface" no README.
+
 ## 11. Arquivo de configuração
 
 As configurações ficam salvas em JSON:
@@ -430,6 +433,7 @@ Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 | `fleet_mode` | `"auto"` | Hashrate nas telas: `"auto"`, `"local"` (este PC) ou `"fleet"` (soma). |
 | `fleet_url` | `""` | Consulta de uma pool própria, com `{address}`. Vazio = escolhida pela pool. |
 | `low_priority` | `false` | Threads de mineração na menor prioridade de CPU (Linux: `SCHED_IDLE` + nice 19): só usam CPU que nada mais quer. Vale a partir da próxima abertura. |
+| `max_temp_c` | `0` | Pausa a mineração enquanto a zona térmica mais quente passar de tantos °C, e retoma 5 °C abaixo (Linux/Android). `0` = desligado; no headless o padrão é 80. |
 
 Para voltar tudo ao padrão, feche o app e apague o arquivo.
 

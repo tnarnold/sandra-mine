@@ -6,17 +6,24 @@ description = "Motor do SandraMine: stratum, mineração na CPU, frota e dados d
 license = "MIT"
 repository = "https://github.com/tnarnold/sandra-mine"
 
+[features]
+# GPU mining through wgpu (Vulkan / Metal / DX12). The desktop app turns it on; headless builds may.
+gpu = ["dep:wgpu", "dep:pollster", "dep:bytemuck"]
+
 [dependencies]
+bytemuck = { version = "1.25.2", optional = true }
 chrono = { version = "0.4.45", default-features = false, features = ["clock", "std"] }
 crossbeam-channel = "0.5.17"
 dirs = "7.0.0"
 gethostname = "1.1.0"
 hex = "0.4.3"
+pollster = { version = "1.0.1", optional = true }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
 sha2 = "0.11.1"
 sys-locale = "0.3.2"
 ureq = "3.5.1"
+wgpu = { version = "30.0.1", optional = true }
 
 [target.'cfg(any(target_os = "linux", target_os = "android"))'.dependencies]
 libc = "0.2"

@@ -71,8 +71,55 @@ jobs:
           name: windows
           path: dist/*.zip
 
+  headless:
+    # Sem interface: estático (musl, só CPU) para x86_64, aarch64 e armv7, e glibc com GPU
+    # (Vulkan carregado em tempo de execução) para x86_64 e aarch64.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-musl, name: linux-x86_64-musl, features: "" }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-musl, name: linux-aarch64-musl, features: "" }
+          - { os: ubuntu-latest, target: armv7-unknown-linux-musleabihf, name: linux-armv7-musl, features: "" }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu, name: linux-x86_64-gpu, features: "--features gpu" }
+          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu, name: linux-aarch64-gpu, features: "--features gpu" }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Build
+        shell: bash
+        run: |
+          T=${{ matrix.target }}
+          if [[ $T == *musl* ]]; then
+            # Estático com o clang (C do ring) e o rust-lld, sem toolchain cruzada.
+            U=$(echo "$T" | tr '[:lower:]-' '[:upper:]_'); L=$(echo "$T" | tr '-' '_')
+            C=${T/unknown-/}
+            export "CARGO_TARGET_${U}_LINKER=rust-lld" "CC_${L}=clang" "CFLAGS_${L}=--target=${C}"
+            export RUSTFLAGS="-C target-feature=+crt-static"
+          fi
+          cargo build --release -p sandra-mine-headless --target "$T" ${{ matrix.features }}
+      - name: Package
+        shell: bash
+        run: |
+          V=$(sed -n 's/^version = "\(.*\)"/\1/p' headless/Cargo.toml | head -1)
+          D=dist/sandra-mine-headless
+          mkdir -p $D
+          cp target/${{ matrix.target }}/release/sandra-mine-headless README.md LICENSE \
+             headless/sandra-mine-headless.service headless/Dockerfile $D/
+          tar -C dist -czf "dist/SandraMine-headless-$V-${{ matrix.name }}.tar.gz" sandra-mine-headless
+      - uses: actions/upload-artifact@v4
+        with:
+          name: headless-${{ matrix.name }}
+          path: dist/*.tar.gz
+
   publish:
-    needs: [macos, linux, windows]
+    needs: [macos, linux, windows, headless]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:

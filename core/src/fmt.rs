@@ -1,5 +1,10 @@
 //! Number formatting in the NerdMiner style.
 
+/// `text` with the wallet address replaced by "…", for logs and anything shown to others.
+pub fn redact(text: &str, address: &str) -> String {
+    if address.is_empty() { text.to_string() } else { text.replace(address, "…") }
+}
+
 pub fn si(v: f64) -> String {
     const UNITS: [&str; 7] = ["", "K", "M", "G", "T", "P", "E"];
     let mut v = v;
@@ -175,5 +180,14 @@ mod tests {
         assert_eq!(duration_t(757_904.0, t), "8.8 days");
         assert_eq!(duration_t(252.4e6 * 31_557_600.0, t), "252M years");
         assert_eq!(feerate_t(1.32, t), "1.3");
+    }
+}
+
+#[cfg(test)]
+mod redact_tests {
+    #[test]
+    fn hides_the_address() {
+        assert_eq!(super::redact("Authorized as bc1qabc.sm-tv", "bc1qabc"), "Authorized as ….sm-tv");
+        assert_eq!(super::redact("no address", ""), "no address");
     }
 }

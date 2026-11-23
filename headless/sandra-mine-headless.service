@@ -1,0 +1,32 @@
+# SandraMine sem interface como serviço do systemd.
+#
+# Instalação (como root):
+#   install -m 755 sandra-mine-headless /usr/local/bin/
+#   sandra-mine-headless --address bc1... --config /etc/sandra-mine/headless.json --save
+#   cp sandra-mine-headless.service /etc/systemd/system/
+#   systemctl enable --now sandra-mine-headless
+#   journalctl -u sandra-mine-headless -f
+#
+# Os mineradores já rodam em SCHED_IDLE + nice 19 (low_priority); as linhas abaixo valem
+# também para o resto do processo.
+
+[Unit]
+Description=SandraMine (mineração solo de Bitcoin, sem interface)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/sandra-mine-headless --config /etc/sandra-mine/headless.json
+Restart=always
+RestartSec=30
+Nice=19
+CPUSchedulingPolicy=idle
+IOSchedulingClass=idle
+DynamicUser=yes
+ProtectSystem=strict
+ProtectHome=yes
+NoNewPrivileges=yes
+# Para minerar na GPU (build com --features gpu): SupplementaryGroups=video render
+
+[Install]
+WantedBy=multi-user.target

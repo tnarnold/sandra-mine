@@ -34,6 +34,8 @@ jobs:
         run: cargo test --workspace --release -- --skip gpu
       - name: Build
         run: cargo build --release
+      - name: Build headless
+        run: cargo build --release -p sandra-mine-headless
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}

@@ -41,6 +41,9 @@ pub struct Config {
     /// Mining threads run at the lowest CPU priority (Linux/Android: SCHED_IDLE + nice 19),
     /// so they only use CPU time nothing else wants.
     pub low_priority: bool,
+    /// Pause mining while the hottest thermal zone is above this (°C), resuming 5 °C below.
+    /// 0 = off. Linux/Android only (reads /sys/class/thermal).
+    pub max_temp_c: u32,
 }
 
 impl Default for Config {
@@ -69,6 +72,7 @@ impl Default for Config {
             fleet_mode: "auto".into(),
             fleet_url: String::new(),
             low_priority: false,
+            max_temp_c: 0,
         }
     }
 }

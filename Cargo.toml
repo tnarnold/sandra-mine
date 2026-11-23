@@ -7,20 +7,18 @@ license = "MIT"
 repository = "https://github.com/tnarnold/sandra-mine"
 
 [workspace]
-members = ["core"]
+members = ["core", "headless"]
 
 [dependencies]
-sandra-core = { path = "core" }
+sandra-core = { path = "core", features = ["gpu"] }
 bytemuck = "1.25.2"
 chrono = { version = "0.4.45", default-features = false, features = ["clock", "std"] }
 crossbeam-channel = "0.5.17"
 eframe = "0.37.0"
 hex = "0.4.3"
 image = { version = "0.25.10", default-features = false, features = ["png"] }
-pollster = "1.0.1"
 sha2 = "0.11.1"
 tray-icon = { version = "0.26.1", default-features = false }
-wgpu = "30.0.1"
 
 # Linux: tray via StatusNotifierItem (D-Bus), no GTK main loop needed alongside winit.
 [target.'cfg(target_os = "linux")'.dependencies]

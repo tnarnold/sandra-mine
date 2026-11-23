@@ -24,8 +24,29 @@ pub struct GpuMiner {
     pub name: String,
 }
 
+/// ARM's Mali driver (libmali) aborts the whole process when it can't open its device, instead
+/// of failing the Vulkan call. Check the device first so a missing permission is just an error.
+#[cfg(target_os = "linux")]
+fn check_device_access() -> Result<(), String> {
+    const MALI: &str = "/dev/mali0";
+    if std::path::Path::new(MALI).exists() {
+        std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(MALI)
+            .map_err(|e| format!("{MALI}: {e} (add the user to the \"video\" group)"))?;
+    }
+    Ok(())
+}
+
+#[cfg(not(target_os = "linux"))]
+fn check_device_access() -> Result<(), String> {
+    Ok(())
+}
+
 impl GpuMiner {
     pub fn new() -> Result<Self, String> {
+        check_device_access()?;
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle_from_env());
         let adapter = pollster::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
             power_preference: wgpu::PowerPreference::HighPerformance,
@@ -141,7 +162,7 @@ fn worker(shared: Arc<Shared>) {
     let mut failed = false;
     let mut batch: u32 = WG * 1024;
     'outer: loop {
-        if shared.paused.load(Relaxed) || !shared.gpu_enabled.load(Relaxed) {
+        if shared.paused.load(Relaxed) || shared.thermal_hold.load(Relaxed) || !shared.gpu_enabled.load(Relaxed) {
             if !failed {
                 set_status(&shared, if gpu.is_some() { GpuStatus::Paused } else { GpuStatus::Off });
             }
@@ -193,6 +214,7 @@ fn worker(shared: Arc<Shared>) {
 
             if shared.job_gen.load(Acquire) != generation
                 || shared.paused.load(Relaxed)
+                || shared.thermal_hold.load(Relaxed)
                 || !shared.gpu_enabled.load(Relaxed)
             {
                 continue 'outer;

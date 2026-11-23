@@ -1,12 +1,11 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 mod app;
-mod gpu;
 mod lab;
 mod screens;
 mod tray;
 
-use sandra_core::{config, currency, fleet, fmt, i18n, miner, netinfo, state, stratum, work};
+use sandra_core::{config, currency, fleet, fmt, gpu, i18n, miner, netinfo, state, stratum, work};
 
 use eframe::egui;
 
@@ -18,6 +17,7 @@ fn main() -> eframe::Result {
     stratum::spawn(shared.clone());
     miner::spawn_cpu(shared.clone());
     miner::spawn_stats(shared.clone());
+    miner::spawn_thermal(shared.clone());
     gpu::spawn(shared.clone());
     netinfo::spawn(shared.clone());
     fleet::spawn(shared.clone());

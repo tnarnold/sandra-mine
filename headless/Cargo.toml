@@ -1,0 +1,14 @@
+[package]
+name = "sandra-mine-headless"
+version = "0.4.0"
+edition = "2024"
+description = "SandraMine sem interface: só a mineração solo de Bitcoin, para servidores, NAS e Raspberry Pi"
+license = "MIT"
+repository = "https://github.com/tnarnold/sandra-mine"
+
+[features]
+# GPU mining through Vulkan/Metal/DX12 (wgpu). Needs a glibc build: Vulkan is loaded at run time.
+gpu = ["sandra-core/gpu"]
+
+[dependencies]
+sandra-core = { path = "../core" }

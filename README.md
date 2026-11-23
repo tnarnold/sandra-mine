@@ -149,6 +149,32 @@ nc -vz public-pool.io 21496     # solo.ckpool.org uses port 3333
 If it times out, allow outbound TCP on that port in your firewall, or try another network (e.g. a
 phone hotspot). The detailed reason is shown in the log inside the ⚙ panel.
 
+## Headless (servers, NAS, Raspberry Pi)
+
+`sandra-mine-headless` is the same engine with no window, no tray and no GPU by default. It adds
+hashrate to the same wallet on machines nobody looks at. Its default worker is
+`sm-<computer>`, so the machine joins the other machines' **My fleet** on its own.
+
+```sh
+cargo build --release -p sandra-mine-headless                  # CPU only
+cargo build --release -p sandra-mine-headless --features gpu   # with GPU (Vulkan/Metal/DX12)
+sandra-mine-headless --address bc1... --save                   # saves the wallet
+sandra-mine-headless                                           # mines
+```
+
+- **Defaults:**
+  - every core at 100% under `SCHED_IDLE` + nice 19, so it only uses spare CPU;
+  - pauses above **80 °C** (`--max-temp`);
+  - one status line every 30 s.
+- **Configuration:**
+  - options and environment variables (`SANDRA_ADDRESS`, `SANDRA_WORKER`, `SANDRA_THREADS`…; see `--help`);
+  - its own `headless.json`, next to the app's `config.json`.
+- **Releases:** ship static (musl) binaries for x86_64, aarch64 and armv7, and glibc ones with GPU
+  for x86_64 and aarch64.
+- **Examples:** `headless/` has a systemd service and a `Dockerfile`.
+- **Measured:** on an RK3588 NAS (4× Cortex-A76 + 4× A55), ~39 MH/s on the CPU alone, at 53 °C. That NAS's
+  Mali-G610 GPU doesn't work through wgpu: ARM's driver only has Vulkan 1.0.
+
 ## Tests
 
 ```sh
@@ -163,10 +189,11 @@ block nonce.
 | File | Purpose |
 |---|---|
 | `core/` | `sandra-core`: the engine with no UI (pool, CPU mining, fleet, network data), shared with [sandra-mine-android](https://github.com/tnarnold/sandra-mine-android) |
+| `headless/` | `sandra-mine-headless`: mining only, no UI (CLI, systemd service, Dockerfile) |
 | `core/src/work.rs` | block header, coinbase/merkle, SHA-256d with midstate, difficulty |
 | `core/src/stratum.rs` | Stratum v1 client |
 | `core/src/miner.rs` | CPU threads with usage limit, hashrate calculation |
-| `src/gpu.rs`, `src/sha256d.wgsl` | GPU miner (wgpu) |
+| `core/src/gpu.rs`, `core/src/sha256d.wgsl` | GPU miner (wgpu, `gpu` feature) |
 | `src/screens.rs` | NerdMiner screens (bitmaps, fonts, coordinates) |
 | `src/app.rs` | window, toolbar and settings |
 | `src/tray.rs` | system tray (status dot, menu bar fields, network/fee dashboard) |

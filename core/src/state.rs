@@ -175,6 +175,10 @@ pub struct Shared {
     pub extranonce2_counter: AtomicU64,
 
     pub paused: AtomicBool,
+    /// Set by the thermal guard (`miner::spawn_thermal`) while the device is too hot.
+    pub thermal_hold: AtomicBool,
+    /// Hottest thermal zone in °C ×1000, 0 when unknown.
+    pub temp_milli: AtomicU32,
     pub cpu_enabled: AtomicBool,
     pub cpu_threads: AtomicUsize,
     pub cpu_usage: AtomicU32,
@@ -217,6 +221,8 @@ impl Shared {
         let (submit_tx, submit_rx) = crossbeam_channel::unbounded();
         Arc::new(Shared {
             paused: AtomicBool::new(cfg.start_paused),
+            thermal_hold: AtomicBool::new(false),
+            temp_milli: AtomicU32::new(0),
             cpu_enabled: AtomicBool::new(cfg.cpu_enabled),
             cpu_threads: AtomicUsize::new(cfg.cpu_threads),
             cpu_usage: AtomicU32::new(cfg.cpu_usage.clamp(1, 100)),

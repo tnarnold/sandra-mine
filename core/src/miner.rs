@@ -25,6 +25,7 @@ pub fn spawn_cpu(shared: Arc<Shared>) {
 
 fn active(shared: &Shared, idx: usize) -> bool {
     !shared.paused.load(Relaxed)
+        && !shared.thermal_hold.load(Relaxed)
         && shared.cpu_enabled.load(Relaxed)
         && idx < shared.cpu_threads.load(Relaxed)
 }
@@ -92,6 +93,53 @@ fn cpu_worker(shared: Arc<Shared>, idx: usize) {
     }
 }
 
+/// Hottest thermal zone in milli-°C (Linux/Android), None when there is none to read.
+pub fn read_temp_milli() -> Option<u32> {
+    let dir = std::fs::read_dir("/sys/class/thermal").ok()?;
+    dir.flatten()
+        .filter(|e| e.file_name().to_string_lossy().starts_with("thermal_zone"))
+        .filter_map(|e| std::fs::read_to_string(e.path().join("temp")).ok())
+        .filter_map(|t| t.trim().parse::<i64>().ok())
+        .filter(|&t| t > 0 && t < 150_000)
+        .max()
+        .map(|t| t as u32)
+}
+
+/// Whether mining should hold for heat: on above `max_c`, off again 5 °C below it.
+pub fn thermal_step(holding: bool, temp_milli: u32, max_c: u32) -> bool {
+    if max_c == 0 || temp_milli == 0 {
+        return false;
+    }
+    let max = max_c * 1000;
+    if holding { temp_milli > max.saturating_sub(5000) } else { temp_milli > max }
+}
+
+/// Reads the temperature every 5 s and holds mining while it is over `max_temp_c`.
+pub fn spawn_thermal(shared: Arc<Shared>) {
+    std::thread::Builder::new()
+        .name("thermal".into())
+        .spawn(move || {
+            loop {
+                let temp = read_temp_milli().unwrap_or(0);
+                shared.temp_milli.store(temp, Relaxed);
+                let max = shared.config.read().unwrap().max_temp_c;
+                let was = shared.thermal_hold.load(Relaxed);
+                let hold = thermal_step(was, temp, max);
+                if hold != was {
+                    shared.thermal_hold.store(hold, Relaxed);
+                    let t = crate::i18n::t();
+                    shared.log(if hold {
+                        crate::i18n::fill(t.log_too_hot, &[&(temp / 1000), &max.saturating_sub(5)])
+                    } else {
+                        crate::i18n::fill(t.log_cooled, &[&(temp / 1000)])
+                    });
+                }
+                std::thread::sleep(Duration::from_secs(5));
+            }
+        })
+        .expect("spawn thermal");
+}
+
 /// Computes hashrates once per second (exponential moving average).
 pub fn spawn_stats(shared: Arc<Shared>) {
     std::thread::Builder::new()
@@ -120,4 +168,19 @@ pub fn spawn_stats(shared: Arc<Shared>) {
             }
         })
         .expect("spawn stats");
+}
+
+#[cfg(test)]
+mod thermal_tests {
+    use super::thermal_step;
+
+    #[test]
+    fn holds_above_the_limit_and_resumes_5c_below() {
+        assert!(!thermal_step(false, 79_000, 80));
+        assert!(thermal_step(false, 80_500, 80));
+        assert!(thermal_step(true, 77_000, 80), "still within the 5 °C band");
+        assert!(!thermal_step(true, 74_900, 80));
+        assert!(!thermal_step(false, 95_000, 0), "0 = off");
+        assert!(!thermal_step(true, 0, 80), "unknown temperature never holds");
+    }
 }

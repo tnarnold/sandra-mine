@@ -3060,6 +3060,7 @@ dependencies = [
 name = "sandra-core"
 version = "0.4.0"
 dependencies = [
+ "bytemuck",
  "cc",
  "chrono",
  "crossbeam-channel",
@@ -3067,11 +3068,13 @@ dependencies = [
  "gethostname",
  "hex",
  "libc",
+ "pollster",
  "serde",
  "serde_json",
  "sha2",
  "sys-locale",
  "ureq",
+ "wgpu",
 ]
 
 [[package]]
@@ -3084,11 +3087,16 @@ dependencies = [
  "eframe",
  "hex",
  "image",
- "pollster",
  "sandra-core",
  "sha2",
  "tray-icon",
- "wgpu",
+]
+
+[[package]]
+name = "sandra-mine-headless"
+version = "0.4.0"
+dependencies = [
+ "sandra-core",
 ]
 
 [[package]]

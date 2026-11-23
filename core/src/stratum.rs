@@ -174,7 +174,7 @@ fn session(shared: &Arc<Shared>, generation: u64) -> Result<(), String> {
                 if result.as_bool() == Some(true) {
                     shared.set_connected(true);
                     shared.set_status(PoolStatus::Connected(cfg.pool_host.clone()));
-                    shared.log(fill(t().log_authorized, &[&user]));
+                    shared.log(fill(t().log_authorized, &[&crate::fmt::redact(&user, &cfg.btc_address)]));
                 } else {
                     return Err(fill(t().err_auth, &[&error]));
                 }

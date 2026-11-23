@@ -395,6 +395,9 @@ Turn on **Iniciar escondido na bandeja** (start hidden) so the app starts straig
   Exec=/path/to/sandra-mine
   ```
 
+On a machine with no screen (a server, NAS or Raspberry Pi), use `sandra-mine-headless`, which can
+run as a systemd service. See "Headless" in the README.
+
 ## 11. Configuration file
 
 Settings are saved as JSON:
@@ -429,6 +432,7 @@ You can edit it with the app closed. Missing fields use their default values.
 | `fleet_mode` | `"auto"` | Hashrate on the screens: `"auto"`, `"local"` (this PC) or `"fleet"` (sum). |
 | `fleet_url` | `""` | Stats URL of your own pool, with `{address}`. Empty = chosen by pool. |
 | `low_priority` | `false` | Mining threads at the lowest CPU priority (Linux: `SCHED_IDLE` + nice 19): they only use CPU time nothing else wants. Takes effect on the next start. |
+| `max_temp_c` | `0` | Pause mining while the hottest thermal zone is above this many °C, resuming 5 °C below (Linux/Android). `0` = off; the headless build defaults to 80. |
 
 To reset everything, quit the app and delete the file.
 
