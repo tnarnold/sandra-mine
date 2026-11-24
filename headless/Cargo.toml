@@ -9,6 +9,8 @@ repository = "https://github.com/tnarnold/sandra-mine"
 [features]
 # GPU mining through Vulkan/Metal/DX12 (wgpu). Needs a glibc build: Vulkan is loaded at run time.
 gpu = ["sandra-core/gpu"]
+# GPU mining through OpenCL (ARM Mali and others), libOpenCL loaded at run time. Needs glibc too.
+opencl = ["sandra-core/opencl"]
 
 [dependencies]
 sandra-core = { path = "../core" }

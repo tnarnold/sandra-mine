@@ -154,9 +154,9 @@ então a máquina entra sozinha no **Minha frota** das outras.
 
 ```sh
 cargo build --release -p sandra-mine-headless                  # só CPU
-cargo build --release -p sandra-mine-headless --features gpu   # com GPU (Vulkan/Metal/DX12)
+cargo build --release -p sandra-mine-headless --features gpu,opencl   # com GPU
 sandra-mine-headless --address bc1... --save                   # grava a carteira
-sandra-mine-headless                                           # minera
+sandra-mine-headless                                           # minera (--gpu 100 liga a GPU)
 ```
 
 - **Padrões:**
@@ -168,9 +168,14 @@ sandra-mine-headless                                           # minera
   - o arquivo próprio `headless.json`, ao lado do `config.json` do app.
 - **Releases:** têm binários estáticos (musl) para x86_64, aarch64 e armv7, e glibc com GPU para
   x86_64 e aarch64.
-- **Exemplos:** `headless/` tem um serviço do systemd e um `Dockerfile`.
-- **Medido:** num NAS com RK3588 (4× Cortex-A76 + 4× A55), ~39 MH/s só na CPU, a 53 °C. A GPU Mali-G610
-  desse NAS não funciona pelo wgpu: o driver da ARM só tem Vulkan 1.0.
+- **GPU:** dois caminhos, escolhidos por `--gpu-backend` (`auto` por padrão):
+  - `wgpu` (feature `gpu`): Vulkan / Metal / DX12;
+  - `opencl` (feature `opencl`): a libOpenCL carregada na hora. O `auto` usa esse na ARM Mali, cujo
+    driver Vulkan 1.0 é antigo demais para o wgpu, e quando o wgpu não acha GPU.
+  - No Linux o usuário precisa de acesso ao dispositivo da GPU (Mali: o grupo `video`).
+- **Exemplos:** `headless/` tem um serviço do systemd, um `Dockerfile` (CPU, estático) e um `Dockerfile.gpu` (OpenCL).
+- **Medido:** num NAS com RK3588 (4× Cortex-A76 + 4× A55), ~39 MH/s na CPU mais ~24 MH/s na
+  Mali-G610 por OpenCL, **~63 MH/s** no total, a 55 °C.
 
 ## Testes
 
@@ -191,6 +196,7 @@ nonce real do bloco gênese.
 | `core/src/stratum.rs` | cliente Stratum v1 |
 | `core/src/miner.rs` | threads de CPU com limite de uso, cálculo de hashrate |
 | `core/src/gpu.rs`, `core/src/sha256d.wgsl` | minerador GPU (wgpu, feature `gpu`) |
+| `core/src/opencl.rs`, `core/src/sha256d.cl` | caminho OpenCL da GPU (feature `opencl`, ARM Mali) |
 | `src/screens.rs` | telas do NerdMiner (bitmaps, fontes, coordenadas) |
 | `src/app.rs` | janela, barra de ferramentas e configurações |
 | `src/tray.rs` | bandeja do sistema (bolinha de estado, campos da barra de menus, painel de rede/taxas) |

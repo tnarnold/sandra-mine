@@ -26,7 +26,7 @@ DynamicUser=yes
 ProtectSystem=strict
 ProtectHome=yes
 NoNewPrivileges=yes
-# Para minerar na GPU (build com --features gpu): SupplementaryGroups=video render
+# Para minerar na GPU (build com --features gpu,opencl e --gpu 100): SupplementaryGroups=video render
 
 [Install]
 WantedBy=multi-user.target

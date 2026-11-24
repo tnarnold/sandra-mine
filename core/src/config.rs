@@ -18,6 +18,9 @@ pub struct Config {
     pub gpu_enabled: bool,
     /// Duty cycle of the GPU, 1..=100 %.
     pub gpu_usage: u32,
+    /// How to reach the GPU: "auto", "wgpu" (Vulkan / Metal / DX12) or "opencl".
+    /// "auto" uses OpenCL on ARM Mali and wgpu elsewhere, falling back to OpenCL.
+    pub gpu_backend: String,
     pub always_on_top: bool,
     pub start_hidden: bool,
     pub start_paused: bool,
@@ -61,6 +64,7 @@ impl Default for Config {
             cpu_usage: 50,
             gpu_enabled: false,
             gpu_usage: 30,
+            gpu_backend: "auto".into(),
             always_on_top: false,
             start_hidden: false,
             start_paused: false,

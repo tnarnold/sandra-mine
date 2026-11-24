@@ -1,8 +1,11 @@
-//! GPU miner using a wgpu compute shader (Metal / Vulkan / DX12).
+//! GPU miner: one thread feeding batches of nonces to a backend, either a wgpu compute
+//! shader (Metal / Vulkan / DX12, feature `gpu`) or OpenCL (feature `opencl`).
 
 use crate::i18n::{fill, t};
 use crate::state::{GpuStatus, Shared, pack_sample};
-use crate::work::{WorkUnit, top32_threshold, verify};
+#[cfg(feature = "gpu")]
+use crate::work::top32_threshold;
+use crate::work::{WorkUnit, verify};
 use std::sync::Arc;
 use std::sync::atomic::Ordering::*;
 use std::time::{Duration, Instant};
@@ -11,8 +14,46 @@ const WG: u32 = 256;
 const MAX_WG: u32 = 65535;
 /// Target duration of one dispatch, keeps the desktop responsive.
 const TARGET_DISPATCH: f64 = 0.03;
+#[cfg(feature = "gpu")]
 const OUT_WORDS: usize = 65;
 
+/// A GPU that can search nonces.
+pub trait Backend {
+    fn name(&self) -> &str;
+    /// Hashes `count` nonces (a multiple of 256) starting at `base`; returns candidate nonces.
+    fn run(&self, w: &WorkUnit, base: u32, count: u32) -> Result<Vec<u32>, String>;
+}
+
+/// Opens the GPU through `which` ("wgpu", "opencl" or "auto"). With "auto", a Mali GPU goes
+/// through OpenCL (ARM's Vulkan driver is too old for wgpu and aborts the process), anything
+/// else tries wgpu first and then OpenCL.
+pub fn open(which: &str) -> Result<Box<dyn Backend>, String> {
+    check_device_access()?;
+    let mali = cfg!(target_os = "linux") && std::path::Path::new("/dev/mali0").exists();
+    let order: &[&str] = match which {
+        "wgpu" => &["wgpu"],
+        "opencl" => &["opencl"],
+        _ if mali => &["opencl"],
+        _ => &["wgpu", "opencl"],
+    };
+    let mut errors = Vec::new();
+    for b in order {
+        let r: Result<Box<dyn Backend>, String> = match *b {
+            #[cfg(feature = "gpu")]
+            "wgpu" => GpuMiner::new().map(|g| Box::new(g) as Box<dyn Backend>),
+            #[cfg(feature = "opencl")]
+            "opencl" => crate::opencl::ClMiner::new().map(|g| Box::new(g) as Box<dyn Backend>),
+            other => Err(format!("{other}: not in this build")),
+        };
+        match r {
+            Ok(g) => return Ok(g),
+            Err(e) => errors.push(e),
+        }
+    }
+    Err(errors.join("; "))
+}
+
+#[cfg(feature = "gpu")]
 pub struct GpuMiner {
     device: wgpu::Device,
     queue: wgpu::Queue,
@@ -27,7 +68,7 @@ pub struct GpuMiner {
 /// ARM's Mali driver (libmali) aborts the whole process when it can't open its device, instead
 /// of failing the Vulkan call. Check the device first so a missing permission is just an error.
 #[cfg(target_os = "linux")]
-fn check_device_access() -> Result<(), String> {
+pub(crate) fn check_device_access() -> Result<(), String> {
     const MALI: &str = "/dev/mali0";
     if std::path::Path::new(MALI).exists() {
         std::fs::OpenOptions::new()
@@ -40,10 +81,22 @@ fn check_device_access() -> Result<(), String> {
 }
 
 #[cfg(not(target_os = "linux"))]
-fn check_device_access() -> Result<(), String> {
+pub(crate) fn check_device_access() -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(feature = "gpu")]
+impl Backend for GpuMiner {
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn run(&self, w: &WorkUnit, base: u32, count: u32) -> Result<Vec<u32>, String> {
+        Ok(GpuMiner::run(self, w, base, count))
+    }
+}
+
+#[cfg(feature = "gpu")]
 impl GpuMiner {
     pub fn new() -> Result<Self, String> {
         check_device_access()?;
@@ -158,7 +211,7 @@ fn set_status(shared: &Shared, s: GpuStatus) {
 }
 
 fn worker(shared: Arc<Shared>) {
-    let mut gpu: Option<GpuMiner> = None;
+    let mut gpu: Option<Box<dyn Backend>> = None;
     let mut failed = false;
     let mut batch: u32 = WG * 1024;
     'outer: loop {
@@ -175,9 +228,10 @@ fn worker(shared: Arc<Shared>) {
                 continue;
             }
             set_status(&shared, GpuStatus::Starting);
-            match GpuMiner::new() {
+            let which = shared.config.read().unwrap().gpu_backend.clone();
+            match open(&which) {
                 Ok(g) => {
-                    shared.log(format!("GPU: {}", g.name));
+                    shared.log(format!("GPU: {}", g.name()));
                     gpu = Some(g);
                 }
                 Err(e) => {
@@ -194,12 +248,22 @@ fn worker(shared: Arc<Shared>) {
             std::thread::sleep(Duration::from_millis(250));
             continue;
         };
-        set_status(&shared, GpuStatus::Mining(g.name.clone()));
+        set_status(&shared, GpuStatus::Mining(g.name().to_string()));
         let mut base: u64 = 0;
         while base < (1u64 << 32) {
             let count = batch.min(((1u64 << 32) - base) as u32 / WG * WG).max(WG);
             let t0 = Instant::now();
-            for nonce in g.run(&work, base as u32, count) {
+            let found = match g.run(&work, base as u32, count) {
+                Ok(f) => f,
+                Err(e) => {
+                    shared.log(fill(t().log_gpu_unavailable, &[&e]));
+                    set_status(&shared, GpuStatus::Unavailable(e));
+                    gpu = None;
+                    failed = true;
+                    continue 'outer;
+                }
+            };
+            for nonce in found {
                 let (_, diff) = verify(&work, nonce);
                 shared.report_candidate(&work, nonce, diff);
             }
@@ -234,12 +298,25 @@ mod tests {
     use sha2::block_api::compress256;
 
     /// Genesis header: the GPU must find the known nonce.
+    #[cfg(feature = "gpu")]
     #[test]
     fn gpu_finds_genesis_nonce() {
-        let Ok(g) = GpuMiner::new() else {
-            eprintln!("no GPU, skipping");
-            return;
-        };
+        match GpuMiner::new() {
+            Ok(g) => finds_genesis(&g),
+            Err(e) => eprintln!("no GPU ({e}), skipping"),
+        }
+    }
+
+    #[cfg(feature = "opencl")]
+    #[test]
+    fn gpu_opencl_finds_genesis_nonce() {
+        match crate::opencl::ClMiner::new() {
+            Ok(g) => finds_genesis(&g),
+            Err(e) => eprintln!("no OpenCL GPU ({e}), skipping"),
+        }
+    }
+
+    fn finds_genesis(g: &dyn Backend) {
         let raw = hex::decode("0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c").unwrap();
         let mut header = [0u8; 80];
         header.copy_from_slice(&raw);
@@ -257,11 +334,11 @@ mod tests {
         };
         let nonce = 0x7c2bac1d_u32;
         let base = nonce - 1000 * 256;
-        let found = g.run(&w, base, 4096 * 256);
+        let found = g.run(&w, base, 4096 * 256).unwrap();
         assert!(found.contains(&nonce), "found {found:x?}");
         let t = Instant::now();
         let n = 32u32 * 65535 * 256 / 32;
-        let _ = g.run(&w, 0, n);
-        eprintln!("{} -> {:.1} MH/s", g.name, n as f64 / t.elapsed().as_secs_f64() / 1e6);
+        let _ = g.run(&w, 0, n).unwrap();
+        eprintln!("{} -> {:.1} MH/s", g.name(), n as f64 / t.elapsed().as_secs_f64() / 1e6);
     }
 }

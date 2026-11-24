@@ -9,6 +9,9 @@ repository = "https://github.com/tnarnold/sandra-mine"
 [features]
 # GPU mining through wgpu (Vulkan / Metal / DX12). The desktop app turns it on; headless builds may.
 gpu = ["dep:wgpu", "dep:pollster", "dep:bytemuck"]
+# GPU mining through OpenCL, with libOpenCL loaded at run time (ARM Mali, whose Vulkan driver
+# is too old for wgpu). Needs a glibc build, like `gpu`.
+opencl = ["dep:libloading"]
 
 [dependencies]
 bytemuck = { version = "1.25.2", optional = true }
@@ -17,6 +20,7 @@ crossbeam-channel = "0.5.17"
 dirs = "7.0.0"
 gethostname = "1.1.0"
 hex = "0.4.3"
+libloading = { version = "0.9.1", optional = true }
 pollster = { version = "1.0.1", optional = true }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"

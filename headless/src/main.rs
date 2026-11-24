@@ -20,7 +20,8 @@ Uso: sandra-mine-headless [opções]
   --pool HOST:PORTA    pool solo, padrão public-pool.io:21496        (SANDRA_POOL)
   --threads N          threads de CPU, padrão todos os núcleos       (SANDRA_THREADS)
   --cpu PCT            uso de cada thread, 1-100, padrão 100         (SANDRA_CPU)
-  --gpu PCT            minera também na GPU, 1-100 (build com gpu)   (SANDRA_GPU)
+  --gpu PCT            minera também na GPU, 1-100 (build com GPU)   (SANDRA_GPU)
+  --gpu-backend B      auto, wgpu ou opencl, padrão auto (Mali: opencl) (SANDRA_GPU_BACKEND)
   --max-temp C         pausa acima de C °C, 0 desliga, padrão 80     (SANDRA_MAX_TEMP)
   --no-low-priority    não usa SCHED_IDLE + nice 19
   --config ARQUIVO     arquivo de configuração                       (SANDRA_CONFIG)
@@ -40,6 +41,7 @@ struct Overrides {
     threads: Option<usize>,
     cpu: Option<u32>,
     gpu: Option<u32>,
+    gpu_backend: Option<String>,
     max_temp: Option<u32>,
     no_low_priority: bool,
     config: Option<PathBuf>,
@@ -53,6 +55,14 @@ fn parse_pool(v: &str) -> Result<(String, u16), String> {
             Ok((h.to_string(), p.parse().map_err(|_| format!("porta inválida em --pool {v}"))?))
         }
         _ => Ok((v.to_string(), 21496)),
+    }
+}
+
+fn parse_backend(v: &str) -> Result<String, String> {
+    let v = v.trim().to_ascii_lowercase();
+    match v.as_str() {
+        "auto" | "wgpu" | "opencl" => Ok(v),
+        _ => Err(format!("--gpu-backend: use auto, wgpu ou opencl (não \"{v}\")")),
     }
 }
 
@@ -72,6 +82,7 @@ fn parse(args: &[String], env: impl Fn(&str) -> Option<String>) -> Result<Overri
     if let Some(v) = env("SANDRA_THREADS") { o.threads = Some(num("SANDRA_THREADS", &v)?); }
     if let Some(v) = env("SANDRA_CPU") { o.cpu = Some(num("SANDRA_CPU", &v)?); }
     if let Some(v) = env("SANDRA_GPU") { o.gpu = Some(num("SANDRA_GPU", &v)?); }
+    if let Some(v) = env("SANDRA_GPU_BACKEND") { o.gpu_backend = Some(parse_backend(&v)?); }
     if let Some(v) = env("SANDRA_MAX_TEMP") { o.max_temp = Some(num("SANDRA_MAX_TEMP", &v)?); }
 
     let mut it = args.iter();
@@ -88,6 +99,7 @@ fn parse(args: &[String], env: impl Fn(&str) -> Option<String>) -> Result<Overri
             "--threads" => o.threads = Some(num(key, &value()?)?),
             "--cpu" => o.cpu = Some(num(key, &value()?)?),
             "--gpu" => o.gpu = Some(num(key, &value()?)?),
+            "--gpu-backend" => o.gpu_backend = Some(parse_backend(&value()?)?),
             "--max-temp" => o.max_temp = Some(num(key, &value()?)?),
             "--config" => o.config = Some(PathBuf::from(value()?)),
             "--status-every" => o.status_every = Some(num(key, &value()?)?),
@@ -125,6 +137,7 @@ fn apply(mut cfg: Config, o: &Overrides) -> Config {
         cfg.gpu_enabled = v > 0;
         cfg.gpu_usage = v.max(1);
     }
+    if let Some(v) = &o.gpu_backend { cfg.gpu_backend = v.clone(); }
     if let Some(v) = o.max_temp { cfg.max_temp_c = v; }
     if o.no_low_priority { cfg.low_priority = false; }
     cfg.cpu_threads = cfg.cpu_threads.clamp(1, miner::max_threads());
@@ -141,6 +154,12 @@ fn default_path() -> PathBuf {
 fn status_line(s: &Shared, pt: bool) -> String {
     let (v, u) = fmt::hashrate(s.hashrate());
     let mut line = format!("{v} {u}");
+    let gpu = s.hashrate_gpu.get();
+    if gpu > 0.0 {
+        let (cv, cu) = fmt::hashrate(s.hashrate_cpu.get());
+        let (gv, gu) = fmt::hashrate(gpu);
+        line += &format!(" (CPU {cv} {cu} + GPU {gv} {gu})");
+    }
     if let (screen, Some(n)) = s.screen_hashrate() {
         let (fv, fu) = fmt::hashrate(screen);
         line += &if pt { format!(" · frota {n} máq. {fv} {fu}") } else { format!(" · fleet {n} machines {fv} {fu}") };
@@ -199,9 +218,9 @@ fn main() {
     let lang = i18n::resolve(&cfg.language);
     i18n::set(lang);
     let pt = matches!(lang, i18n::Lang::Pt);
-    #[cfg(not(feature = "gpu"))]
+    #[cfg(not(any(feature = "gpu", feature = "opencl")))]
     if cfg.gpu_enabled {
-        eprintln!("{}", if pt { "Este binário não tem GPU (build sem --features gpu): só CPU." } else { "This build has no GPU support (no --features gpu): CPU only." });
+        eprintln!("{}", if pt { "Este binário não tem GPU (build sem --features gpu/opencl): só CPU." } else { "This build has no GPU support (no --features gpu/opencl): CPU only." });
     }
     println!(
         "SandraMine headless · {} · {}:{} · {} threads × {}% · {}{}",
@@ -248,7 +267,9 @@ mod tests {
             "SANDRA_POOL" => Some("pool.local".to_string()),
             _ => None,
         };
-        let o = parse(&args("--threads 6 --pool=solo.ckpool.org:3333 --gpu 40 --save"), env).unwrap();
+        let o = parse(&args("--threads 6 --pool=solo.ckpool.org:3333 --gpu 40 --gpu-backend OpenCL --save"), env).unwrap();
+        assert_eq!(o.gpu_backend.as_deref(), Some("opencl"));
+        assert!(parse(&args("--gpu-backend cuda"), env).is_err());
         assert_eq!(o.address.as_deref(), Some("bc1env"));
         assert_eq!(o.threads, Some(6));
         assert_eq!(o.pool, Some(("solo.ckpool.org".into(), 3333)));

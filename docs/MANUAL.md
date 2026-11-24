@@ -421,6 +421,7 @@ You can edit it with the app closed. Missing fields use their default values.
 | `cpu_usage` | `50` | % usage per thread (1–100). |
 | `gpu_enabled` | `false` | Mine with the GPU. |
 | `gpu_usage` | `30` | % GPU usage (1–100). |
+| `gpu_backend` | `"auto"` | How to reach the GPU: `"wgpu"` (Vulkan / Metal / DX12), `"opencl"`, or `"auto"` (OpenCL on ARM Mali, wgpu elsewhere with OpenCL as a fallback). Each needs its build feature. |
 | `always_on_top` | `false` | Window always on top. |
 | `start_hidden` | `false` | Start hidden in the tray. |
 | `start_paused` | `false` | Start paused (updated automatically by the pause button). |

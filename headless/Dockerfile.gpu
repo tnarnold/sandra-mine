@@ -1,0 +1,15 @@
+# SandraMine sem interface com GPU por OpenCL (ex.: ARM Mali num NAS com RK3588).
+#
+# Use o binário glibc com GPU (build com --features gpu,opencl), ao lado deste arquivo:
+#   docker build -f headless/Dockerfile.gpu -t sandra-mine-headless:gpu headless/
+#   docker run -d --name sandra-mine --restart unless-stopped --device /dev/mali0 \
+#     -v /usr/lib/aarch64-linux-gnu:/hostlib:ro -v /etc/OpenCL:/etc/OpenCL:ro \
+#     -v /sys/class/thermal:/sys/class/thermal:ro -v sandra-mine:/data \
+#     -e SANDRA_ADDRESS=bc1... -e SANDRA_WORKER=sm-nas sandra-mine-headless:gpu --gpu 100
+#
+# O driver da GPU é o do host (montado em /hostlib), então a imagem precisa da mesma versão
+# do Debian que o host: bookworm (glibc 2.36) aqui. Troque a linha FROM se o host for outro.
+FROM debian:bookworm-slim
+COPY sandra-mine-headless /usr/local/bin/sandra-mine-headless
+ENV LD_LIBRARY_PATH=/hostlib/mali:/hostlib
+ENTRYPOINT ["/usr/local/bin/sandra-mine-headless", "--config", "/data/headless.json"]

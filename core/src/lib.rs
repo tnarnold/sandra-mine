@@ -6,17 +6,20 @@ pub mod config;
 pub mod currency;
 pub mod fleet;
 pub mod fmt;
-#[cfg(feature = "gpu")]
+#[cfg(any(feature = "gpu", feature = "opencl"))]
 pub mod gpu;
 pub mod i18n;
 pub mod miner;
 pub mod netinfo;
+#[cfg(feature = "opencl")]
+pub mod opencl;
 pub mod state;
 pub mod stratum;
 pub mod work;
 
-/// Without the `gpu` feature there is no GPU miner; `spawn` does nothing, so callers need no `cfg`.
-#[cfg(not(feature = "gpu"))]
+/// Without the `gpu` and `opencl` features there is no GPU miner; `spawn` does nothing, so
+/// callers need no `cfg`.
+#[cfg(not(any(feature = "gpu", feature = "opencl")))]
 pub mod gpu {
     pub fn spawn(_shared: std::sync::Arc<crate::state::Shared>) {}
 }

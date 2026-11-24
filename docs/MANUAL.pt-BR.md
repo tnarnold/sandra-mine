@@ -422,6 +422,7 @@ Dá para editar com o app fechado. Campos que faltarem usam o valor padrão.
 | `cpu_usage` | `50` | % de uso por thread (1–100). |
 | `gpu_enabled` | `false` | Minerar com a GPU. |
 | `gpu_usage` | `30` | % de uso da GPU (1–100). |
+| `gpu_backend` | `"auto"` | Como acessar a GPU: `"wgpu"` (Vulkan / Metal / DX12), `"opencl"` ou `"auto"` (OpenCL na ARM Mali, wgpu no resto com OpenCL de reserva). Cada um precisa da feature no build. |
 | `always_on_top` | `false` | Janela sempre no topo. |
 | `start_hidden` | `false` | Iniciar escondido na bandeja. |
 | `start_paused` | `false` | Iniciar pausado (atualizado automaticamente pelo botão de pausa). |
